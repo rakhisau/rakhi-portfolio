@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { getGlowTexture } from './glowTexture'
 
 export default function AgentNode({
   position = [0, 0, 0],
@@ -59,8 +60,13 @@ export default function AgentNode({
 
       {/* halo */}
       <mesh>
-        <planeGeometry args={[size * 9, size * 9]} />
-        <meshBasicMaterial color={color} transparent opacity={0.06} depthWrite={false} />
+        <planeGeometry args={[size * 14, size * 14]} />
+        <meshBasicMaterial
+          map={getGlowTexture(color)}
+          transparent
+          opacity={0.42}
+          depthWrite={false}
+        />
       </mesh>
     </group>
   )

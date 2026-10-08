@@ -1,13 +1,8 @@
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { RoundedBox, Edges } from '@react-three/drei'
-import { makeUITexture } from './uiTexture'
-
-const ACCENTS = {
-  website: '#7c3aed',
-  software: '#0891b2',
-  agent: '#d97706',
-}
+import { makeUITexture, PALETTES } from './uiTexture'
+import { getGlowTexture } from './glowTexture'
 
 export default function GlassPanel({
   position = [0, 0, 0],
@@ -15,12 +10,15 @@ export default function GlassPanel({
   scale = 1,
   kind = 'website',
   seed = 0,
+  palette = 0,
   floatSpeed = 1,
 }) {
   const group = useRef(null)
-  const texture = useMemo(() => makeUITexture(kind, seed), [kind, seed])
-  const accent = ACCENTS[kind] || ACCENTS.website
+  const texture = useMemo(() => makeUITexture(kind, seed, palette), [kind, seed, palette])
+  const accent = PALETTES[palette % PALETTES.length].strong
   const phase = useMemo(() => seed * 1.7, [seed])
+
+  useEffect(() => () => texture.dispose(), [texture])
 
   useFrame((state) => {
     if (!group.current) return
@@ -33,7 +31,7 @@ export default function GlassPanel({
   return (
     <group ref={group} position={position} rotation={rotation} scale={scale}>
       {/* frame */}
-      <RoundedBox args={[3.1, 2.1, 0.08]} radius={0.07} smoothness={3}>
+      <RoundedBox args={[3.2, 2.16, 0.08]} radius={0.07} smoothness={3}>
         <meshStandardMaterial
           color="#ffffff"
           roughness={0.25}
@@ -46,14 +44,19 @@ export default function GlassPanel({
 
       {/* screen */}
       <mesh position={[0, 0, 0.05]}>
-        <planeGeometry args={[2.92, 1.94]} />
-        <meshBasicMaterial map={texture} toneMapped={false} transparent opacity={0.96} />
+        <planeGeometry args={[3.02, 1.98]} />
+        <meshBasicMaterial map={texture} toneMapped={false} />
       </mesh>
 
       {/* soft colour wash behind the panel */}
-      <mesh position={[0, 0, -0.12]}>
-        <planeGeometry args={[3.6, 2.6]} />
-        <meshBasicMaterial color={accent} transparent opacity={0.07} />
+      <mesh position={[0, 0, -0.14]}>
+        <planeGeometry args={[6.4, 5.0]} />
+        <meshBasicMaterial
+          map={getGlowTexture(accent)}
+          transparent
+          opacity={0.3}
+          depthWrite={false}
+        />
       </mesh>
     </group>
   )
