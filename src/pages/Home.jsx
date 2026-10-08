@@ -1,15 +1,26 @@
-import { useEffect, useState } from 'react'
+import { Suspense, lazy, useEffect, useState } from 'react'
 import SiteHeader from '../components/SiteHeader'
 import SiteFooter from '../components/SiteFooter'
 import ProjectSlider from '../components/ProjectSlider'
 import Reveal from '../components/Reveal'
+import MaskedText from '../components/MaskedText'
+import ScrollProgress from '../components/ScrollProgress'
 import { supabase } from '../lib/supabaseClient'
 import { CATEGORIES } from '../lib/categories'
-import { NAME, TITLE, EMAIL, PHONE, PHONE_DIAL, WHATSAPP_LINK, SOCIALS, SERVICES, STATS, TECH } from '../lib/siteInfo'
+import { useScrollProgress } from '../hooks/useScrollProgress'
+import { useDeviceTier } from '../hooks/useDeviceTier'
+import {
+  NAME, TITLE, EMAIL, PHONE, PHONE_DIAL, WHATSAPP_LINK,
+  SOCIALS, SERVICES, STATS, TECH,
+} from '../lib/siteInfo'
+
+const Scene3D = lazy(() => import('../three/Scene3D'))
 
 export default function Home() {
   const [projects, setProjects] = useState([])
   const [loading, setLoading] = useState(true)
+  const { progressRef, progress } = useScrollProgress()
+  const tier = useDeviceTier()
 
   useEffect(() => {
     supabase
@@ -24,71 +35,77 @@ export default function Home() {
   }, [])
 
   return (
-    <>
+    <div className="world">
+      <div className="scene-layer">
+        <Suspense fallback={null}>
+          <Scene3D progressRef={progressRef} tier={tier} />
+        </Suspense>
+      </div>
+
+      <ScrollProgress progress={progress} />
       <SiteHeader />
 
-      <main id="top">
-        <section className="hero">
-          <div className="hero-blob hero-blob-1" />
-          <div className="hero-blob hero-blob-2" />
-          <div className="hero-blob hero-blob-3" />
-          <div className="container hero-inner">
-            <p className="eyebrow">Available for freelance work</p>
-            <h1>
-              Hi, I'm {NAME.split(' ')[0]} —<br />
-              I build <span className="accent-gradient">websites, software & AI automation</span> that get results.
-            </h1>
-            <p className="hero-sub">{TITLE}</p>
-            <div className="hero-actions">
-              <a className="btn btn-primary" href="#contact">Get in touch</a>
-              <a className="btn btn-outline" href="#work">See my work</a>
+      <main id="top" className="chapters">
+        {/* ---------- Chapter 1 ---------- */}
+        <section className="chapter chapter-hero">
+          <div className="container">
+            <div className="glass-panel hero-panel">
+              <p className="eyebrow">01 — Available for freelance work</p>
+              <MaskedText as="h1" text={`Hi, I'm ${NAME.split(' ')[0]}.`} className="hero-line" />
+              <MaskedText
+                as="h1"
+                text="I build websites, software & AI agents."
+                className="hero-line hero-line-accent"
+                delay={220}
+              />
+              <p className="hero-sub">{TITLE}</p>
+              <div className="hero-actions">
+                <a className="btn btn-primary" href="#contact">Start a project</a>
+                <a className="btn btn-outline" href="#work">Explore the work</a>
+              </div>
             </div>
 
             <div className="hero-stats">
-              {STATS.map((s) => (
-                <div className="hero-stat" key={s.label}>
-                  <span className="hero-stat-value">{s.value}</span>
-                  <span className="hero-stat-label">{s.label}</span>
-                </div>
+              {STATS.map((s, i) => (
+                <Reveal key={s.label} delay={300 + i * 90}>
+                  <div className="hero-stat">
+                    <span className="hero-stat-value">{s.value}</span>
+                    <span className="hero-stat-label">{s.label}</span>
+                  </div>
+                </Reveal>
               ))}
             </div>
           </div>
+          <div className="scroll-cue"><span /></div>
         </section>
 
-        <section className="tech-strip">
-          <div className="tech-marquee">
-            <div className="tech-track">
-              {[...TECH, ...TECH].map((t, i) => (
-                <span className="tech-chip" key={`${t}-${i}`}>{t}</span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section id="about" className="section">
+        {/* ---------- Chapter 2 ---------- */}
+        <section id="about" className="chapter">
           <div className="container">
-            <Reveal>
-              <h2 className="section-title">About</h2>
-              <p className="about-text">
-                I'm {NAME}, a {TITLE}. I help businesses go from idea to
-                working product — designing and building websites and landing pages, developing
-                custom software, and setting up AI automation agents and voice-calling AI agents
-                fully integrated with CRMs. My focus is delivering practical solutions that save
-                time, generate leads, and scale with your business.
+            <div className="glass-panel narrow-panel">
+              <p className="eyebrow">02 — About</p>
+              <MaskedText as="h2" text="Built to work, not just to look good." className="chapter-title" />
+              <p className="chapter-body">
+                I'm {NAME}, a {TITLE}. I help businesses go from idea to working product —
+                designing and building websites and landing pages, developing custom software,
+                and deploying AI automation agents and voice-calling agents wired directly into
+                your CRM. Every build is measured by one thing: does it save time or make money.
               </p>
-            </Reveal>
+            </div>
           </div>
         </section>
 
-        <section id="services" className="section section-alt">
+        {/* ---------- Chapter 3 ---------- */}
+        <section id="services" className="chapter">
           <div className="container">
-            <Reveal>
-              <h2 className="section-title">Services</h2>
-            </Reveal>
+            <div className="chapter-head">
+              <p className="eyebrow">03 — Services</p>
+              <MaskedText as="h2" text="Five ways I can help you." className="chapter-title" />
+            </div>
             <div className="grid services-grid">
               {SERVICES.map((s, i) => (
-                <Reveal key={s.title} delay={i * 80}>
-                  <div className="card card-glow">
+                <Reveal key={s.title} delay={i * 90}>
+                  <div className="glass-panel card card-glow">
                     <span className="card-icon">{s.icon}</span>
                     <h3>{s.title}</h3>
                     <p>{s.desc}</p>
@@ -99,21 +116,24 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="work" className="section">
+        {/* ---------- Chapter 4 ---------- */}
+        <section id="work" className="chapter">
           <div className="container">
-            <Reveal>
-              <h2 className="section-title">My Work</h2>
-              <p className="section-sub">A look at projects across every category I work in.</p>
-            </Reveal>
+            <div className="chapter-head">
+              <p className="eyebrow">04 — Work</p>
+              <MaskedText as="h2" text="Projects across every category." className="chapter-title" />
+            </div>
             {!loading && (
               <div className="sliders-stack">
                 {CATEGORIES.map((c, i) => (
-                  <Reveal key={c.key} delay={i * 60}>
-                    <ProjectSlider
-                      icon={c.icon}
-                      label={c.label}
-                      projects={projects.filter((p) => p.category === c.key)}
-                    />
+                  <Reveal key={c.key} delay={i * 70}>
+                    <div className="glass-panel slider-panel">
+                      <ProjectSlider
+                        icon={c.icon}
+                        label={c.label}
+                        projects={projects.filter((p) => p.category === c.key)}
+                      />
+                    </div>
                   </Reveal>
                 ))}
               </div>
@@ -121,12 +141,25 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="contact" className="section section-alt">
-          <div className="container contact-inner">
-            <Reveal>
-              <h2 className="section-title">Let's Work Together</h2>
-              <p className="section-sub">
-                Have a project in mind? Reach out and let's talk about how I can help.
+        {/* ---------- Tech strip ---------- */}
+        <section className="tech-strip">
+          <div className="tech-marquee">
+            <div className="tech-track">
+              {[...TECH, ...TECH].map((t, i) => (
+                <span className="tech-chip" key={`${t}-${i}`}>{t}</span>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- Chapter 5 ---------- */}
+        <section id="contact" className="chapter chapter-contact">
+          <div className="container">
+            <div className="glass-panel narrow-panel contact-inner">
+              <p className="eyebrow">05 — Contact</p>
+              <MaskedText as="h2" text="Let's build something that works." className="chapter-title" />
+              <p className="chapter-body">
+                Tell me what you need and I'll come back with a plan, a timeline, and a price.
               </p>
               <div className="contact-links">
                 <a className="btn btn-primary" href={`mailto:${EMAIL}`}>Email me</a>
@@ -142,12 +175,12 @@ export default function Home() {
                   <a key={s.label} href={s.href} className="social-link">{s.label}</a>
                 ))}
               </div>
-            </Reveal>
+            </div>
           </div>
         </section>
       </main>
 
       <SiteFooter />
-    </>
+    </div>
   )
 }
