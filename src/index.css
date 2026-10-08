@@ -3,8 +3,8 @@
   --ink: #0e1124;
   --text: #4e5468;
   --muted: #7a8196;
-  --bg: #f2f4fb;
-  --bg-soft: #e9ecf7;
+  --bg: #eceaf8;
+  --bg-soft: #dfe4f3;
   --panel: rgba(255, 255, 255, 0.58);
   --panel-solid: #ffffff;
   --border: rgba(14, 17, 36, 0.09);
@@ -45,10 +45,12 @@ html {
 body {
   margin: 0;
   background:
-    radial-gradient(70% 50% at 15% 0%, rgba(124, 58, 237, 0.1), transparent 60%),
-    radial-gradient(60% 50% at 90% 20%, rgba(8, 145, 178, 0.08), transparent 60%),
-    radial-gradient(50% 40% at 50% 100%, rgba(217, 119, 6, 0.07), transparent 60%),
-    linear-gradient(180deg, var(--bg), var(--bg-soft));
+    radial-gradient(60% 45% at 12% 2%, rgba(139, 92, 246, 0.3), transparent 62%),
+    radial-gradient(55% 45% at 92% 14%, rgba(34, 211, 238, 0.26), transparent 62%),
+    radial-gradient(52% 40% at 78% 62%, rgba(244, 114, 182, 0.22), transparent 62%),
+    radial-gradient(50% 38% at 18% 78%, rgba(52, 211, 153, 0.2), transparent 62%),
+    radial-gradient(48% 36% at 55% 100%, rgba(245, 158, 11, 0.2), transparent 62%),
+    linear-gradient(170deg, var(--bg), var(--bg-soft));
   background-attachment: fixed;
   min-height: 100vh;
 }

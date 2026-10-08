@@ -38,20 +38,20 @@ export default function WorkflowPanel({
 
   return (
     <group ref={group} position={position} rotation={rotation} scale={scale}>
-      <RoundedBox args={[3.4, 2.3, 0.08]} radius={0.07} smoothness={3}>
-        <meshStandardMaterial color="#ffffff" roughness={0.25} metalness={0.08} transparent opacity={0.8} />
+      <RoundedBox args={[4.6, 3.1, 0.09]} radius={0.08} smoothness={3}>
+        <meshStandardMaterial color="#ffffff" roughness={0.25} metalness={0.08} transparent opacity={0.82} />
         <Edges threshold={15} color={accent} scale={1.001} />
       </RoundedBox>
-      <mesh position={[0, 0, 0.05]}>
-        <planeGeometry args={[3.2, 2.14]} />
+      <mesh position={[0, 0, 0.055]}>
+        <planeGeometry args={[4.36, 2.86]} />
         <meshBasicMaterial map={texture} toneMapped={false} />
       </mesh>
-      <mesh position={[0, 0, -0.14]}>
-        <planeGeometry args={[6.8, 5.2]} />
+      <mesh position={[0, 0, -0.16]}>
+        <planeGeometry args={[9.0, 7.0]} />
         <meshBasicMaterial
           map={getGlowTexture(accent)}
           transparent
-          opacity={0.32}
+          opacity={0.34}
           depthWrite={false}
         />
       </mesh>

@@ -36,9 +36,10 @@ export default function AgentNode({
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={0.85}
-          roughness={0.3}
-          metalness={0.2}
+          emissiveIntensity={0.42}
+          roughness={0.45}
+          metalness={0.25}
+          flatShading
         />
       </mesh>
 

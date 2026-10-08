@@ -8,12 +8,12 @@ import { getGlowTexture } from './glowTexture'
 // Hues are spaced out along the path so neighbouring fields don't
 // overlap into muddy tones.
 const ZONES = [
-  { color: '#8b5cf6', position: [-8, 3, -9], scale: 30, opacity: 0.48, drift: 1.0 },
-  { color: '#22d3ee', position: [10, -3, -17], scale: 32, opacity: 0.4, drift: 1.4 },
-  { color: '#f472b6', position: [-10, -2, -25], scale: 30, opacity: 0.34, drift: 0.8 },
-  { color: '#34d399', position: [9, 4, -33], scale: 32, opacity: 0.34, drift: 1.6 },
-  { color: '#f59e0b', position: [-8, 2, -41], scale: 32, opacity: 0.3, drift: 1.2 },
-  { color: '#818cf8', position: [4, -3, -48], scale: 34, opacity: 0.42, drift: 1.1 },
+  { color: '#8b5cf6', position: [-9, 3, -9], scale: 36, opacity: 0.62, drift: 1.0 },
+  { color: '#22d3ee', position: [11, -3, -17], scale: 38, opacity: 0.55, drift: 1.4 },
+  { color: '#f472b6', position: [-11, -2, -25], scale: 36, opacity: 0.5, drift: 0.8 },
+  { color: '#34d399', position: [10, 4, -33], scale: 38, opacity: 0.48, drift: 1.6 },
+  { color: '#f59e0b', position: [-9, 2, -41], scale: 38, opacity: 0.44, drift: 1.2 },
+  { color: '#818cf8', position: [4, -3, -48], scale: 40, opacity: 0.56, drift: 1.1 },
 ]
 
 function Zone({ color, position, scale, opacity, drift }) {

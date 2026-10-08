@@ -19,7 +19,7 @@ export function useDeviceTier() {
 }
 
 export const TIER_SETTINGS = {
-  high: { panels: 7, agents: 5, particles: 260, dpr: [1, 1.8], shadows: true },
-  low: { panels: 4, agents: 3, particles: 90, dpr: [1, 1.3], shadows: false },
-  static: { panels: 4, agents: 3, particles: 0, dpr: [1, 1.3], shadows: false },
+  high: { particles: 260, dpr: [1, 1.8], fps: 12, zones: 6 },
+  low: { particles: 90, dpr: [1, 1.3], fps: 6, zones: 4 },
+  static: { particles: 0, dpr: [1, 1.3], fps: 0, zones: 4 },
 }

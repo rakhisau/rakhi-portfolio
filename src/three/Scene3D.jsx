@@ -21,18 +21,18 @@ function World({ tier }) {
 
   return (
     <>
-      <ColorZones count={full ? 6 : 4} />
+      <ColorZones count={s.zones} />
 
       {/* ---------- Chapter 1: arrival ---------- */}
-      <GlassPanel position={[-5.6, 0.8, -3]} rotation={[0, 0.6, 0]} kind="website" seed={1} palette={0} />
-      <GlassPanel position={[5.4, -0.6, -4.5]} rotation={[0, -0.55, 0]} kind="software" seed={2} palette={1} />
+      <GlassPanel position={[-6.6, 0.8, -3]} rotation={[0, 0.6, 0]} kind="website" seed={1} palette={0} fps={s.fps} />
+      <GlassPanel position={[6.4, -0.6, -4.5]} rotation={[0, -0.55, 0]} kind="software" seed={2} palette={1} fps={s.fps} />
       {full && (
-        <WorkflowPanel position={[0.8, 2.8, -8.5]} rotation={[0, 0.08, 0]} accent="#be123c" seed={3} scale={0.8} />
+        <WorkflowPanel position={[0.8, 3.4, -9.5]} rotation={[0, 0.08, 0]} accent="#be123c" seed={3} scale={0.85} />
       )}
-      <AgentNode position={[-2.2, -2.0, -6]} color={VIOLET} seed={1} size={0.36} />
-      <AgentNode position={[3.2, 2.0, -7]} color={CYAN} seed={2} size={0.3} />
-      <DataFlow from={[-5.6, 0.8, -3]} to={[-2.2, -2.0, -6]} color={VIOLET} seed={0.2} />
-      <DataFlow from={[5.4, -0.6, -4.5]} to={[3.2, 2.0, -7]} color={CYAN} seed={0.7} />
+      <AgentNode position={[-2.4, -2.4, -6]} color={VIOLET} seed={1} size={0.36} />
+      <AgentNode position={[3.4, 2.4, -7]} color={CYAN} seed={2} size={0.3} />
+      <DataFlow from={[-6.6, 0.8, -3]} to={[-2.4, -2.4, -6]} color={VIOLET} seed={0.2} />
+      <DataFlow from={[6.4, -0.6, -4.5]} to={[3.4, 2.4, -7]} color={CYAN} seed={0.7} />
 
       {/* ---------- Chapter 2: the service constellation ---------- */}
       <AgentNode position={[-5.6, 1.4, -15]} color={VIOLET} seed={3} size={0.34} />
@@ -48,17 +48,17 @@ function World({ tier }) {
           <DataFlow from={[-5.6, 1.4, -15]} to={[0.4, 3.4, -19]} color={VIOLET} seed={2.6} sag={0.6} />
         </>
       )}
-      <WorkflowPanel position={[4.2, -0.4, -22]} rotation={[0, -0.42, 0]} accent="#6d28d9" seed={8} />
+      <WorkflowPanel position={[5.0, -0.6, -22]} rotation={[0, -0.44, 0]} accent="#6d28d9" seed={8} />
 
       {/* ---------- Chapter 3: the work ---------- */}
-      <GlassPanel position={[-5.8, 1.6, -25]} rotation={[0, 0.6, 0.03]} kind="website" seed={9} palette={3} />
-      <GlassPanel position={[5.6, 0.6, -27]} rotation={[0, -0.55, -0.03]} kind="website" seed={10} palette={4} />
+      <GlassPanel position={[-6.8, 1.8, -25]} rotation={[0, 0.6, 0.03]} kind="website" seed={9} palette={3} fps={s.fps} />
+      <GlassPanel position={[6.6, 0.6, -27.5]} rotation={[0, -0.55, -0.03]} kind="website" seed={10} palette={4} fps={s.fps} />
       {full && (
-        <GlassPanel position={[-5.0, -2.2, -29]} rotation={[0, 0.45, 0]} kind="software" seed={11} palette={5} scale={0.9} />
+        <GlassPanel position={[-6.2, -2.6, -30]} rotation={[0, 0.45, 0]} kind="software" seed={11} palette={5} fps={s.fps} scale={0.9} />
       )}
-      <GlassPanel position={[4.8, -2.0, -30.5]} rotation={[0, -0.4, 0]} kind="software" seed={12} palette={2} scale={0.95} />
+      <GlassPanel position={[5.8, -2.6, -31.5]} rotation={[0, -0.4, 0]} kind="software" seed={12} palette={2} fps={s.fps} scale={0.95} />
       {full && (
-        <GlassPanel position={[-0.4, 3.2, -31]} rotation={[0, 0.1, 0]} kind="website" seed={13} palette={1} scale={0.78} />
+        <GlassPanel position={[-0.4, 3.8, -32]} rotation={[0, 0.1, 0]} kind="website" seed={13} palette={1} fps={s.fps} scale={0.8} />
       )}
 
       {/* ---------- Chapter 4: everything connected ---------- */}
