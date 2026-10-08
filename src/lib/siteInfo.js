@@ -12,6 +12,18 @@ export const SOCIALS = [
   { label: 'Fiverr', href: '#' },
 ]
 
+export const STATS = [
+  { value: '20+', label: 'Projects delivered' },
+  { value: '8+', label: 'Websites built' },
+  { value: '5+', label: 'AI agents deployed' },
+  { value: '100%', label: 'Custom built' },
+]
+
+export const TECH = [
+  'React', 'Next.js', 'Node.js', 'Python', 'Supabase', 'MongoDB',
+  'n8n', 'OpenAI', 'Twilio', 'WordPress', 'Tailwind', 'Vercel',
+]
+
 export const SERVICES = [
   {
     icon: '🌐',

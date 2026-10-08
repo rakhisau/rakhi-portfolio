@@ -26,6 +26,7 @@ async function uploadFile(file, folder) {
 export default function AdminDashboard() {
   const [session, setSession] = useState(undefined)
   const [projects, setProjects] = useState([])
+  const [leads, setLeads] = useState([])
   const [form, setForm] = useState(EMPTY_FORM)
   const [coverFile, setCoverFile] = useState(null)
   const [extraFiles, setExtraFiles] = useState([])
@@ -47,11 +48,23 @@ export default function AdminDashboard() {
       return
     }
     loadProjects()
+    loadLeads()
   }, [session])
 
   const loadProjects = async () => {
     const { data } = await supabase.from('projects').select('*').order('created_at', { ascending: false })
     setProjects(data || [])
+  }
+
+  const loadLeads = async () => {
+    const { data } = await supabase.from('leads').select('*').order('created_at', { ascending: false })
+    setLeads(data || [])
+  }
+
+  const handleDeleteLead = async (id) => {
+    if (!window.confirm('Delete this lead?')) return
+    await supabase.from('leads').delete().eq('id', id)
+    loadLeads()
   }
 
   const loadExistingImages = async (projectId) => {
@@ -280,6 +293,27 @@ export default function AdminDashboard() {
               <div className="admin-list-actions">
                 <button className="btn btn-outline" onClick={() => startEdit(p)}>Edit</button>
                 <button className="btn btn-outline admin-delete" onClick={() => handleDeleteProject(p.id)}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="admin-list">
+          <h2>Leads ({leads.length})</h2>
+          {leads.length === 0 && <p>No leads yet — they'll appear here when visitors submit the popup form.</p>}
+          {leads.map((l) => (
+            <div className="admin-leads-row" key={l.id}>
+              <div className="admin-list-info">
+                <h3>{l.name}</h3>
+                <div className="admin-leads-meta">
+                  <a href={`tel:${l.phone}`}>{l.phone}</a> · {new Date(l.created_at).toLocaleString()}
+                </div>
+                {l.project_need && <p className="admin-leads-need">{l.project_need}</p>}
+              </div>
+              <div className="admin-list-actions">
+                <button className="btn btn-outline admin-delete" onClick={() => handleDeleteLead(l.id)}>
                   Delete
                 </button>
               </div>
