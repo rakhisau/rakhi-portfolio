@@ -440,3 +440,377 @@ a {
   font-size: 13px;
   opacity: 0.7;
 }
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.admin-link {
+  text-decoration: none;
+  color: var(--text);
+  opacity: 0.6;
+}
+
+.admin-link:hover {
+  opacity: 1;
+  color: var(--accent);
+}
+
+/* Project sliders */
+.sliders-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.slider-block {
+  text-align: left;
+}
+
+.slider-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.slider-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+}
+
+.slider-icon {
+  font-size: 22px;
+}
+
+.slider-nav {
+  display: flex;
+  gap: 8px;
+}
+
+.slider-nav button {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-h);
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.slider-nav button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.slider-empty {
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+.slider-track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 8px;
+  scrollbar-width: thin;
+}
+
+.project-card {
+  flex: 0 0 280px;
+  scroll-snap-align: start;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+}
+
+.project-cover {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+  background: var(--bg-alt);
+}
+
+.project-cover-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  background: linear-gradient(135deg, var(--accent-soft), var(--bg-alt));
+}
+
+.project-card-body {
+  padding: 16px 18px 20px;
+}
+
+.project-card-body h4 {
+  font-size: 16px;
+  margin: 0 0 6px;
+  color: var(--text-h);
+}
+
+.project-card-body p {
+  font-size: 13.5px;
+  margin: 0;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Project detail page */
+.project-detail {
+  text-align: left;
+}
+
+.back-link {
+  display: inline-block;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.back-link:hover {
+  color: var(--accent);
+}
+
+.project-detail-title {
+  font-size: 32px;
+  margin: 14px 0 8px;
+}
+
+.project-detail-sub {
+  text-align: left;
+  margin: 0 0 32px;
+}
+
+.project-gallery-main {
+  width: 100%;
+  max-height: 480px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+
+.project-gallery-thumbs {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.project-gallery-thumb {
+  width: 84px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  opacity: 0.7;
+}
+
+.project-gallery-thumb.active {
+  border-color: var(--accent);
+  opacity: 1;
+}
+
+.project-detail-body {
+  max-width: 720px;
+  margin-top: 36px;
+}
+
+.project-detail-section {
+  margin-bottom: 28px;
+}
+
+.project-detail-section h3 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: var(--accent);
+}
+
+/* Admin */
+.admin-login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-alt);
+  padding: 24px;
+}
+
+.admin-login-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: var(--card-shadow);
+}
+
+.admin-login-card h1 {
+  font-size: 22px;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.admin-login-card label,
+.admin-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.admin-login-card input,
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+  font: inherit;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+}
+
+.admin-error {
+  color: #ef4444;
+  font-size: 14px;
+  margin: 0;
+}
+
+.admin-dashboard {
+  padding: 48px 0 80px;
+  text-align: left;
+}
+
+.admin-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 48px;
+  max-width: 640px;
+}
+
+.admin-cover-preview {
+  width: 160px;
+  border-radius: 10px;
+  margin-top: -6px;
+}
+
+.admin-existing-images {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-existing-image {
+  text-align: center;
+}
+
+.admin-existing-image img {
+  width: 90px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+
+.admin-existing-image button {
+  font-size: 12px;
+  border: none;
+  background: none;
+  color: #ef4444;
+  cursor: pointer;
+}
+
+.admin-form-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.admin-list {
+  max-width: 800px;
+}
+
+.admin-list-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background: var(--card-bg);
+}
+
+.admin-list-row img {
+  width: 64px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.admin-list-info {
+  flex: 1;
+}
+
+.admin-list-category {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
+.admin-list-info h3 {
+  font-size: 16px;
+  margin: 2px 0 0;
+}
+
+.admin-list-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-delete {
+  color: #ef4444;
+  border-color: color-mix(in srgb, #ef4444 40%, var(--border));
+}
