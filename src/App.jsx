@@ -10,33 +10,38 @@ const WHATSAPP_LINK = `https://wa.me/918967060021`
 
 const SERVICES = [
   {
+    icon: '🌐',
     title: 'Websites',
     desc: 'Custom business, portfolio, and e-commerce websites built to be fast, responsive, and easy to manage.',
   },
   {
+    icon: '🚀',
     title: 'Landing Pages',
     desc: 'High-converting landing pages for product launches, campaigns, and lead generation.',
   },
   {
+    icon: '🛠️',
     title: 'Custom Software',
     desc: 'End-to-end software solutions tailored to specific business workflows and requirements.',
   },
   {
+    icon: '🤖',
     title: 'AI Automation Agents',
     desc: 'Automation agents that handle repetitive workflows, data processing, and integrations between your tools.',
   },
   {
+    icon: '📞',
     title: 'AI Voice Calling Agents',
     desc: 'Voice call agents with full telephony setup, integrated directly with your CRM for seamless lead handling.',
   },
 ]
 
 const WORK = [
-  { category: 'Websites', count: '7-8', note: 'Business, portfolio & e-commerce sites delivered end-to-end.' },
-  { category: 'Landing Pages', count: '3-4', note: 'Conversion-focused pages for campaigns and product launches.' },
-  { category: 'Custom Software', count: '2', note: 'Purpose-built software solving specific business problems.' },
-  { category: 'Automation Agents', count: '4-5', note: 'AI-driven agents automating repetitive business workflows.' },
-  { category: 'Voice Calling Agent + CRM', count: '1', note: 'Full-stack AI voice agent with telephony and CRM integration.' },
+  { icon: '🌐', category: 'Websites', count: '7-8', note: 'Business, portfolio & e-commerce sites delivered end-to-end.' },
+  { icon: '🚀', category: 'Landing Pages', count: '3-4', note: 'Conversion-focused pages for campaigns and product launches.' },
+  { icon: '🛠️', category: 'Custom Software', count: '2', note: 'Purpose-built software solving specific business problems.' },
+  { icon: '🤖', category: 'Automation Agents', count: '4-5', note: 'AI-driven agents automating repetitive business workflows.' },
+  { icon: '📞', category: 'Voice Calling Agent + CRM', count: '1', note: 'Full-stack AI voice agent with telephony and CRM integration.' },
 ]
 
 const SOCIALS = [
@@ -110,6 +115,7 @@ function App() {
             <div className="grid services-grid">
               {SERVICES.map((s) => (
                 <div className="card" key={s.title}>
+                  <span className="card-icon">{s.icon}</span>
                   <h3>{s.title}</h3>
                   <p>{s.desc}</p>
                 </div>
@@ -125,6 +131,7 @@ function App() {
             <div className="grid work-grid">
               {WORK.map((w) => (
                 <div className="card work-card" key={w.category}>
+                  <span className="card-icon">{w.icon}</span>
                   <span className="work-count">{w.count}</span>
                   <h3>{w.category}</h3>
                   <p>{w.note}</p>
