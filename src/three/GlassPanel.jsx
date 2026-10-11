@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { RoundedBox, Edges } from '@react-three/drei'
+import * as THREE from 'three'
 import { createPanelTexture } from './uiTexture'
 import { getGlowTexture } from './glowTexture'
 
@@ -45,11 +46,11 @@ export default function GlassPanel({
     <group ref={group} position={position} rotation={rotation} scale={scale}>
       <RoundedBox args={[4.3, 2.9, 0.09]} radius={0.08} smoothness={3}>
         <meshStandardMaterial
-          color="#ffffff"
-          roughness={0.25}
-          metalness={0.1}
+          color="#141a2e"
+          roughness={0.35}
+          metalness={0.5}
           transparent
-          opacity={0.78}
+          opacity={0.92}
         />
         <Edges threshold={15} color={accent} scale={1.001} />
       </RoundedBox>
@@ -64,8 +65,9 @@ export default function GlassPanel({
         <meshBasicMaterial
           map={getGlowTexture(accent)}
           transparent
-          opacity={0.32}
+          opacity={0.5}
           depthWrite={false}
+          blending={THREE.AdditiveBlending}
         />
       </mesh>
     </group>

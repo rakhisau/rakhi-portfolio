@@ -1,5 +1,6 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
+import * as THREE from 'three'
 import { getGlowTexture } from './glowTexture'
 
 export default function AgentNode({
@@ -36,9 +37,9 @@ export default function AgentNode({
         <meshStandardMaterial
           color={color}
           emissive={color}
-          emissiveIntensity={0.42}
-          roughness={0.45}
-          metalness={0.25}
+          emissiveIntensity={0.7}
+          roughness={0.4}
+          metalness={0.3}
           flatShading
         />
       </mesh>
@@ -65,8 +66,9 @@ export default function AgentNode({
         <meshBasicMaterial
           map={getGlowTexture(color)}
           transparent
-          opacity={0.42}
+          opacity={0.6}
           depthWrite={false}
+          blending={THREE.AdditiveBlending}
         />
       </mesh>
     </group>

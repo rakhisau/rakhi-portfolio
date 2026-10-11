@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { RoundedBox, Edges } from '@react-three/drei'
+import * as THREE from 'three'
 import { createWorkflowTexture } from './workflowTexture'
 import { getGlowTexture } from './glowTexture'
 
@@ -39,7 +40,7 @@ export default function WorkflowPanel({
   return (
     <group ref={group} position={position} rotation={rotation} scale={scale}>
       <RoundedBox args={[4.6, 3.1, 0.09]} radius={0.08} smoothness={3}>
-        <meshStandardMaterial color="#ffffff" roughness={0.25} metalness={0.08} transparent opacity={0.82} />
+        <meshStandardMaterial color="#141a2e" roughness={0.35} metalness={0.5} transparent opacity={0.92} />
         <Edges threshold={15} color={accent} scale={1.001} />
       </RoundedBox>
       <mesh position={[0, 0, 0.055]}>
@@ -51,8 +52,9 @@ export default function WorkflowPanel({
         <meshBasicMaterial
           map={getGlowTexture(accent)}
           transparent
-          opacity={0.34}
+          opacity={0.52}
           depthWrite={false}
+          blending={THREE.AdditiveBlending}
         />
       </mesh>
     </group>
