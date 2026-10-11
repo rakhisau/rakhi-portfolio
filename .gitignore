@@ -26,3 +26,6 @@ dist-ssr
 # Never commit secrets/recovery codes
 vercel backup/
 *recovery-codes*
+
+# Source screenshots live in Supabase storage, not in the repo
+projectes/

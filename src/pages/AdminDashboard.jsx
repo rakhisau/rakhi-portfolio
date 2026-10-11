@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import { CATEGORIES } from '../lib/categories'
+import { compressImage, formatBytes } from '../lib/compressImage'
 
 const EMPTY_FORM = {
   id: null,
@@ -15,12 +16,26 @@ const EMPTY_FORM = {
 }
 
 async function uploadFile(file, folder) {
-  const ext = file.name.split('.').pop()
+  const optimised = await compressImage(file)
+  const ext = optimised.name.split('.').pop()
   const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-  const { error } = await supabase.storage.from('project-images').upload(path, file)
+  const { error } = await supabase.storage.from('project-images').upload(path, optimised)
   if (error) throw error
   const { data } = supabase.storage.from('project-images').getPublicUrl(path)
   return data.publicUrl
+}
+
+// Shows what compression will do before anything is uploaded.
+async function describeSavings(files) {
+  if (!files.length) return null
+  const before = files.reduce((n, f) => n + f.size, 0)
+  const after = (await Promise.all(files.map(compressImage))).reduce((n, f) => n + f.size, 0)
+  return {
+    count: files.length,
+    before,
+    after,
+    saved: before > 0 ? Math.round((1 - after / before) * 100) : 0,
+  }
 }
 
 export default function AdminDashboard() {
@@ -30,6 +45,7 @@ export default function AdminDashboard() {
   const [form, setForm] = useState(EMPTY_FORM)
   const [coverFile, setCoverFile] = useState(null)
   const [extraFiles, setExtraFiles] = useState([])
+  const [savings, setSavings] = useState(null)
   const [existingImages, setExistingImages] = useState([])
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -77,7 +93,15 @@ export default function AdminDashboard() {
     setCoverFile(null)
     setExtraFiles([])
     setExistingImages([])
+    setSavings(null)
     setError('')
+  }
+
+  const pickFiles = async (files, apply) => {
+    apply()
+    const all = [...files].filter((f) => f.type.startsWith('image/'))
+    setSavings(all.length ? 'working' : null)
+    if (all.length) setSavings(await describeSavings(all))
   }
 
   const startEdit = (p) => {
@@ -238,7 +262,10 @@ export default function AdminDashboard() {
             <input
               type="file"
               accept="image/*"
-              onChange={(e) => setCoverFile(e.target.files[0] || null)}
+              onChange={(e) => {
+                const files = [...e.target.files]
+                pickFiles(files, () => setCoverFile(files[0] || null))
+              }}
             />
           </label>
           {form.cover_image && (
@@ -251,9 +278,21 @@ export default function AdminDashboard() {
               type="file"
               accept="image/*"
               multiple
-              onChange={(e) => setExtraFiles(Array.from(e.target.files))}
+              onChange={(e) => {
+                const files = Array.from(e.target.files)
+                pickFiles(files, () => setExtraFiles(files))
+              }}
             />
           </label>
+
+          {savings === 'working' && <p className="admin-note">Checking images…</p>}
+          {savings && savings !== 'working' && (
+            <p className="admin-note admin-note-good">
+              {savings.count} image{savings.count > 1 ? 's' : ''} will be resized to 1600px wide
+              and converted to WebP — {formatBytes(savings.before)} → {formatBytes(savings.after)}
+              {savings.saved > 0 && ` (${savings.saved}% smaller)`}
+            </p>
+          )}
 
           {existingImages.length > 0 && (
             <div className="admin-existing-images">
