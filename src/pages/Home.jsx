@@ -9,9 +9,10 @@ import { supabase } from '../lib/supabaseClient'
 import { CATEGORIES } from '../lib/categories'
 import { useScrollProgress } from '../hooks/useScrollProgress'
 import { useDeviceTier } from '../hooks/useDeviceTier'
+import HeroVideo from '../components/HeroVideo'
 import {
   NAME, TITLE, EMAIL, PHONE, PHONE_DIAL, WHATSAPP_LINK,
-  SOCIALS, SERVICES, STATS, TECH,
+  SOCIALS, SERVICES, STATS, TECH, HERO_VIDEO, HERO_VIDEO_POSTER,
 } from '../lib/siteInfo'
 
 const Scene3D = lazy(() => import('../three/Scene3D'))
@@ -49,20 +50,24 @@ export default function Home() {
         {/* ---------- Chapter 1 ---------- */}
         <section className="chapter chapter-hero">
           <div className="container">
-            <div className="glass-panel hero-panel">
-              <p className="eyebrow">01 — Available for freelance work</p>
-              <MaskedText as="h1" text={`Hi, I'm ${NAME.split(' ')[0]}.`} className="hero-line" />
-              <MaskedText
-                as="h1"
-                text="I build websites, software & AI agents."
-                className="hero-line hero-line-accent"
-                delay={220}
-              />
-              <p className="hero-sub">{TITLE}</p>
-              <div className="hero-actions">
-                <a className="btn btn-primary" href="#contact">Start a project</a>
-                <a className="btn btn-outline" href="#work">Explore the work</a>
+            <div className={`hero-layout ${HERO_VIDEO ? 'has-video' : ''}`}>
+              <div className="glass-panel hero-panel">
+                <p className="eyebrow">01 — Available for freelance work</p>
+                <MaskedText as="h1" text={`Hi, I'm ${NAME.split(' ')[0]}.`} className="hero-line" />
+                <MaskedText
+                  as="h1"
+                  text="I build websites, software & AI agents."
+                  className="hero-line hero-line-accent"
+                  delay={220}
+                />
+                <p className="hero-sub">{TITLE}</p>
+                <div className="hero-actions">
+                  <a className="btn btn-primary" href="#contact">Start a project</a>
+                  <a className="btn btn-outline" href="#work">Explore the work</a>
+                </div>
               </div>
+
+              <HeroVideo src={HERO_VIDEO} poster={HERO_VIDEO_POSTER} name={NAME} />
             </div>
 
             <div className="hero-stats">

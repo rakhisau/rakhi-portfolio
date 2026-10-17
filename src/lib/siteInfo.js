@@ -5,6 +5,11 @@ export const PHONE = '+91 8967060021'
 export const PHONE_DIAL = '+918967060021'
 export const WHATSAPP_LINK = 'https://wa.me/918967060021'
 
+// Hero intro video. Accepts a YouTube/Vimeo link or a direct .mp4 URL.
+// Leave empty and the hero renders without the video column.
+export const HERO_VIDEO = ''
+export const HERO_VIDEO_POSTER = ''
+
 export const SOCIALS = [
   { label: 'LinkedIn', href: '#' },
   { label: 'GitHub', href: '#' },

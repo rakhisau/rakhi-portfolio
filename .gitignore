@@ -27,5 +27,6 @@ dist-ssr
 vercel backup/
 *recovery-codes*
 
-# Source screenshots live in Supabase storage, not in the repo
+# Source screenshots and video live in Supabase storage, not in the repo
 projectes/
+demo/
