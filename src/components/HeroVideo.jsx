@@ -12,7 +12,18 @@ function vimeoId(url) {
 
 export default function HeroVideo({ src, poster, name }) {
   const [playing, setPlaying] = useState(false)
-  if (!src) return null
+
+  // Placeholder until the intro video is recorded.
+  if (!src) {
+    return (
+      <div className="hero-video">
+        <div className="hero-video-frame hero-video-empty">
+          <span className="hero-video-play"><span /></span>
+          <span className="hero-video-label">Intro video coming soon</span>
+        </div>
+      </div>
+    )
+  }
 
   const yt = youtubeId(src)
   const vimeo = vimeoId(src)

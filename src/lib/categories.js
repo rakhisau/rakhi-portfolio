@@ -1,9 +1,10 @@
+// Order mirrors SERVICES so both sections read the same way.
 export const CATEGORIES = [
+  { key: 'voice-agent', label: 'AI Voice Calling Agents', icon: '📞' },
+  { key: 'automation', label: 'AI Automation Agents', icon: '🤖' },
+  { key: 'software', label: 'Custom Software', icon: '🛠️' },
   { key: 'website', label: 'Websites', icon: '🌐' },
   { key: 'landing-page', label: 'Landing Pages', icon: '🚀' },
-  { key: 'software', label: 'Custom Software', icon: '🛠️' },
-  { key: 'automation', label: 'AI Automation Agents', icon: '🤖' },
-  { key: 'voice-agent', label: 'AI Voice Calling Agents', icon: '📞' },
 ]
 
 export function categoryLabel(key) {

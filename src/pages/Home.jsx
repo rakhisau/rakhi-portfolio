@@ -50,7 +50,7 @@ export default function Home() {
         {/* ---------- Chapter 1 ---------- */}
         <section className="chapter chapter-hero">
           <div className="container">
-            <div className={`hero-layout ${HERO_VIDEO ? 'has-video' : ''}`}>
+            <div className="hero-layout has-video">
               <div className="glass-panel hero-panel">
                 <p className="eyebrow">01 — Available for freelance work</p>
                 <MaskedText as="h1" text={`Hi, I'm ${NAME.split(' ')[0]}.`} className="hero-line" />
@@ -167,9 +167,9 @@ export default function Home() {
                 Tell me what you need and I'll come back with a plan, a timeline, and a price.
               </p>
               <div className="contact-links">
-                <a className="btn btn-primary" href={`mailto:${EMAIL}`}>Email me</a>
+                <a className="btn btn-primary" href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">WhatsApp</a>
                 <a className="btn btn-outline" href={`tel:${PHONE_DIAL}`}>Call</a>
-                <a className="btn btn-outline" href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                <a className="btn btn-outline" href={`mailto:${EMAIL}`}>Email me</a>
               </div>
               <div className="contact-details">
                 <p>{EMAIL}</p>

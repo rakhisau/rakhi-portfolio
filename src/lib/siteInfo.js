@@ -13,8 +13,6 @@ export const HERO_VIDEO_POSTER = ''
 export const SOCIALS = [
   { label: 'LinkedIn', href: '#' },
   { label: 'GitHub', href: '#' },
-  { label: 'Upwork', href: '#' },
-  { label: 'Fiverr', href: '#' },
 ]
 
 export const STATS = [
@@ -29,7 +27,23 @@ export const TECH = [
   'n8n', 'OpenAI', 'Twilio', 'WordPress', 'Tailwind', 'Vercel',
 ]
 
+// Highest-value services lead.
 export const SERVICES = [
+  {
+    icon: '📞',
+    title: 'AI Voice Calling Agents',
+    desc: 'Voice call agents with full telephony setup, integrated directly with your CRM for seamless lead handling.',
+  },
+  {
+    icon: '🤖',
+    title: 'AI Automation Agents',
+    desc: 'Automation agents that handle repetitive workflows, data processing, and integrations between your tools.',
+  },
+  {
+    icon: '🛠️',
+    title: 'Custom Software',
+    desc: 'End-to-end software solutions tailored to specific business workflows and requirements.',
+  },
   {
     icon: '🌐',
     title: 'Websites',
@@ -39,20 +53,5 @@ export const SERVICES = [
     icon: '🚀',
     title: 'Landing Pages',
     desc: 'High-converting landing pages for product launches, campaigns, and lead generation.',
-  },
-  {
-    icon: '🛠️',
-    title: 'Custom Software',
-    desc: 'End-to-end software solutions tailored to specific business workflows and requirements.',
-  },
-  {
-    icon: '🤖',
-    title: 'AI Automation Agents',
-    desc: 'Automation agents that handle repetitive workflows, data processing, and integrations between your tools.',
-  },
-  {
-    icon: '📞',
-    title: 'AI Voice Calling Agents',
-    desc: 'Voice call agents with full telephony setup, integrated directly with your CRM for seamless lead handling.',
   },
 ]
