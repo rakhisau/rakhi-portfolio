@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import CameraRig from './CameraRig'
 import GlassPanel from './GlassPanel'
 import WorkflowPanel from './WorkflowPanel'
+import VideoPanel from './VideoPanel'
 import AgentNode from './AgentNode'
 import DataFlow from './DataFlow'
 import Particles from './Particles'
@@ -15,6 +16,8 @@ const AMBER = '#d97706'
 const ROSE = '#e11d48'
 const EMERALD = '#059669'
 
+const SOFTWARE_CLIP = '/media/software-3d.mp4'
+
 function World({ tier }) {
   const s = TIER_SETTINGS[tier]
   const full = tier === 'high'
@@ -25,7 +28,17 @@ function World({ tier }) {
 
       {/* ---------- Chapter 1: arrival ---------- */}
       <GlassPanel position={[-6.6, 0.8, -3]} rotation={[0, 0.6, 0]} kind="website" seed={1} palette={0} fps={s.fps} />
-      <GlassPanel position={[6.4, -0.6, -4.5]} rotation={[0, -0.55, 0]} kind="software" seed={2} palette={1} fps={s.fps} />
+      {full ? (
+        <VideoPanel
+          src={SOFTWARE_CLIP}
+          position={[8.0, -3.2, -6]}
+          rotation={[0, -0.5, 0.02]}
+          accent={CYAN}
+          seed={2}
+        />
+      ) : (
+        <GlassPanel position={[6.4, -0.6, -4.5]} rotation={[0, -0.55, 0]} kind="software" seed={2} palette={1} fps={s.fps} />
+      )}
       {full && (
         <WorkflowPanel position={[1.8, 4.4, -11]} rotation={[0, 0.1, 0]} accent="#be123c" seed={3} scale={0.85} />
       )}
@@ -56,7 +69,19 @@ function World({ tier }) {
       {full && (
         <GlassPanel position={[-6.2, -2.6, -30]} rotation={[0, 0.45, 0]} kind="software" seed={11} palette={5} fps={s.fps} scale={0.9} />
       )}
-      <GlassPanel position={[5.8, -2.6, -31.5]} rotation={[0, -0.4, 0]} kind="software" seed={12} palette={2} fps={s.fps} scale={0.95} />
+      {full ? (
+        <VideoPanel
+          src={SOFTWARE_CLIP}
+          position={[5.8, -2.6, -31.5]}
+          rotation={[0, -0.4, 0]}
+          accent={AMBER}
+          seed={12}
+          startAt={5}
+          scale={0.95}
+        />
+      ) : (
+        <GlassPanel position={[5.8, -2.6, -31.5]} rotation={[0, -0.4, 0]} kind="software" seed={12} palette={2} fps={s.fps} scale={0.95} />
+      )}
       {full && (
         <GlassPanel position={[-3.6, 5.2, -33]} rotation={[0, 0.3, 0]} kind="website" seed={13} palette={1} fps={s.fps} scale={0.8} />
       )}
