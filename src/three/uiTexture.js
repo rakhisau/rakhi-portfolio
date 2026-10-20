@@ -29,6 +29,91 @@ const seeded = (seed) => (n) => {
   return x - Math.floor(x)
 }
 
+const FONT = 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif'
+
+function text(ctx, str, x, y, opts = {}) {
+  const { size = 12, weight = 500, color = '#1e2434', align = 'left', max } = opts
+  ctx.font = `${weight} ${size}px ${FONT}`
+  ctx.fillStyle = color
+  ctx.textAlign = align
+  ctx.textBaseline = 'middle'
+  ctx.fillText(str, x, y, max)
+  ctx.textAlign = 'left'
+}
+
+/* ---------------- demo content ---------------- */
+
+const BRANDS = ['Nexora', 'Brightlane', 'Kyra & Co.', 'Vermilion', 'Evergrow', 'Northwind']
+
+const SAAS = {
+  nav: ['Home', 'Features', 'Pricing', 'About'],
+  h1: ['Grow your business', 'without the busywork.'],
+  body: [
+    'Everything you need to launch, sell and scale —',
+    'in one place, set up in a single afternoon.',
+  ],
+  cta: ['Get started free', 'Book a demo'],
+  badge: 'NEW · AI BUILT IN',
+  logos: 'TRUSTED BY 400+ TEAMS',
+  features: [
+    { t: 'Set up in minutes', d: ['No code, no developers,', 'no long onboarding calls.'] },
+    { t: 'Built-in automation', d: ['Let agents handle the', 'repetitive work for you.'] },
+    { t: 'Support that answers', d: ['Real humans, replying in', 'under two hours.'] },
+  ],
+}
+
+const SHOP = {
+  nav: ['New In', 'Women', 'Men', 'Sale'],
+  h1: 'End of Season Sale',
+  sub: 'Up to 50% off everything',
+  cta: 'Shop now',
+  products: [
+    ['Linen Shirt', '₹2,499'], ['Canvas Tote', '₹1,199'],
+    ['Wool Scarf', '₹899'], ['Leather Belt', '₹1,750'],
+    ['Cotton Kurta', '₹1,999'], ['Suede Loafers', '₹3,450'],
+    ['Silk Scrunchie', '₹349'], ['Denim Jacket', '₹4,299'],
+  ],
+}
+
+const AGENCY = {
+  nav: ['Work', 'Studio', 'Journal', 'Contact'],
+  h1: ['We build brands', 'people remember.'],
+  body: ['Strategy, identity and websites for', 'founders who refuse to blend in.'],
+  tiles: ['Mira Coffee', 'Atlas Fintech', 'Form Studio', 'Harbour Co.', 'Lumen Health', 'Ridge Outdoors'],
+}
+
+const DASH = {
+  nav: ['Dashboard', 'Leads', 'Clients', 'Tasks', 'Invoices', 'Reports', 'Settings'],
+  title: 'Overview',
+  search: 'Search anything…',
+  stats: [
+    { label: 'Revenue', value: '₹4.28L', delta: '+12.4%' },
+    { label: 'New leads', value: '1,284', delta: '+8.1%' },
+    { label: 'Conversion', value: '12.4%', delta: '+1.9%' },
+  ],
+  chart: 'Revenue · last 30 days',
+  donut: 'Lead sources',
+  legend: [['Organic', '48%'], ['Paid ads', '31%'], ['Referral', '21%']],
+}
+
+const CRM = {
+  nav: ['Dashboard', 'Leads', 'Pipeline', 'Clients', 'Team', 'Payroll', 'Settings'],
+  title: 'All leads',
+  add: '+ Add lead',
+  cols: ['Name', 'Email', 'Status', 'Added'],
+  rows: [
+    ['Amit Sharma', 'amit@novaretail.in', 'Qualified', '2 Apr'],
+    ['Priya Patel', 'priya.p@kyraco.com', 'Contacted', '2 Apr'],
+    ['Rahul Verma', 'rahul@brightlane.io', 'New', '1 Apr'],
+    ['Sneha Roy', 'sneha@harbour.co', 'Won', '1 Apr'],
+    ['Vikram Singh', 'vikram@atlasfin.in', 'Contacted', '31 Mar'],
+    ['Anjali Das', 'anjali@formstudio.in', 'Qualified', '31 Mar'],
+    ['Imran Khan', 'imran@ridgeout.com', 'New', '30 Mar'],
+    ['Neha Gupta', 'neha@lumenhealth.in', 'Won', '30 Mar'],
+  ],
+  statusColor: { New: '#0ea5e9', Contacted: '#f59e0b', Qualified: '#8b5cf6', Won: '#10b981' },
+}
+
 /* ---------------- shared chrome + cursor ---------------- */
 
 function drawChrome(ctx, label) {
@@ -100,7 +185,7 @@ const near = (cursor, x, y, w, h) =>
 
 /* ---------------- website page (scrolls) ---------------- */
 
-function websitePage(ctx, p, variant, rand, t, cursor) {
+function websitePage(ctx, p, variant, rand, t, cursor, brand) {
   // nav is drawn by the caller on top; this is the scrolling body
   if (variant === 0) {
     const g = ctx.createLinearGradient(0, 0, W, 240)
@@ -109,24 +194,27 @@ function websitePage(ctx, p, variant, rand, t, cursor) {
     ctx.fillStyle = g
     ctx.fillRect(0, 0, W, 240)
 
+    // badge
     ctx.fillStyle = p.strong
-    r(ctx, 40, 28, 96, 20, 10)
-    ctx.fillStyle = p.ink
-    r(ctx, 40, 62, 252, 22, 6)
-    r(ctx, 40, 92, 196, 22, 6)
-    ctx.fillStyle = '#aab2c2'
-    r(ctx, 40, 130, 236, 10, 5)
-    r(ctx, 40, 148, 188, 10, 5)
+    r(ctx, 40, 26, 132, 22, 11)
+    text(ctx, SAAS.badge, 50, 37, { size: 10, weight: 700, color: '#ffffff' })
+
+    text(ctx, SAAS.h1[0], 40, 74, { size: 27, weight: 700, color: p.ink })
+    text(ctx, SAAS.h1[1], 40, 104, { size: 27, weight: 700, color: p.ink })
+    text(ctx, SAAS.body[0], 40, 136, { size: 12.5, color: '#6c7689' })
+    text(ctx, SAAS.body[1], 40, 154, { size: 12.5, color: '#6c7689' })
 
     // CTA reacts to the cursor
-    const hot = near(cursor, 40, 174, 104, 30)
+    const hot = near(cursor, 40, 174, 128, 32)
     ctx.fillStyle = hot ? p.mid : p.strong
-    r(ctx, 40 - (hot ? 2 : 0), 174 - (hot ? 2 : 0), 104 + (hot ? 4 : 0), 30 + (hot ? 4 : 0), 15)
+    r(ctx, 40 - (hot ? 2 : 0), 174 - (hot ? 2 : 0), 128 + (hot ? 4 : 0), 32 + (hot ? 4 : 0), 16)
+    text(ctx, SAAS.cta[0], 104, 190, { size: 12.5, weight: 650, color: '#ffffff', align: 'center' })
     ctx.strokeStyle = '#cfd6e4'
     ctx.lineWidth = 2
     ctx.beginPath()
-    ctx.roundRect(156, 174, 96, 30, 15)
+    ctx.roundRect(180, 174, 110, 32, 16)
     ctx.stroke()
+    text(ctx, SAAS.cta[1], 235, 190, { size: 12.5, weight: 600, color: p.ink, align: 'center' })
 
     // hero visual with a live mini bar chart
     ctx.fillStyle = '#ffffff'
@@ -137,102 +225,124 @@ function websitePage(ctx, p, variant, rand, t, cursor) {
     ctx.stroke()
     ctx.fillStyle = p.mid
     r(ctx, 346, 46, 240, 70, 8)
+    text(ctx, 'Monthly signups', 356, 58, { size: 10, weight: 650, color: 'rgba(255,255,255,0.9)' })
     for (let i = 0; i < 7; i++) {
-      const h = 14 + (Math.sin(t * 1.6 + i * 0.8) * 0.5 + 0.5) * 38
-      ctx.fillStyle = 'rgba(255,255,255,0.85)'
+      const h = 10 + (Math.sin(t * 1.6 + i * 0.8) * 0.5 + 0.5) * 34
+      ctx.fillStyle = 'rgba(255,255,255,0.9)'
       r(ctx, 360 + i * 32, 106 - h, 18, h, 3)
     }
-    ctx.fillStyle = '#eef1f6'
-    r(ctx, 346, 126, 112, 10, 5)
-    r(ctx, 346, 144, 170, 10, 5)
+    text(ctx, 'Revenue this quarter', 346, 131, { size: 11, weight: 600, color: p.ink })
+    text(ctx, '₹12,40,000 · up 18% on last quarter', 346, 149, { size: 10.5, color: '#8b94a6' })
     ctx.fillStyle = p.soft
-    r(ctx, 470, 154, 116, 34, 8)
+    r(ctx, 470, 158, 116, 32, 8)
+    text(ctx, 'View report →', 528, 174, { size: 10.5, weight: 650, color: p.strong, align: 'center' })
 
     // logo strip
     ctx.fillStyle = '#f6f7fa'
     ctx.fillRect(0, 240, W, 52)
+    text(ctx, SAAS.logos, 40, 266, { size: 10, weight: 700, color: '#9aa3b2' })
     ctx.fillStyle = '#d6dbe5'
-    for (let i = 0; i < 5; i++) r(ctx, 48 + i * 112, 258, 72, 16, 5)
+    BRANDS.slice(0, 4).forEach((b, i) =>
+      text(ctx, b, 240 + i * 100, 266, { size: 12, weight: 700, color: '#c3cad6' })
+    )
 
     // feature cards lift in sequence
-    for (let i = 0; i < 3; i++) {
+    SAAS.features.forEach((f, i) => {
       const lift = Math.max(0, Math.sin(t * 1.1 - i * 0.9)) * 6
       const x = 40 + i * 190
       ctx.fillStyle = '#f4f5f9'
       r(ctx, x, 316 - lift, 170, 128, 12)
       ctx.fillStyle = [p.soft, p.mid, p.soft][i]
-      r(ctx, x + 14, 330 - lift, 56, 56, 10)
-      ctx.fillStyle = '#d3d9e3'
-      r(ctx, x + 14, 398 - lift, 104, 10, 5)
-      r(ctx, x + 14, 416 - lift, 76, 10, 5)
-    }
+      r(ctx, x + 14, 330 - lift, 36, 36, 10)
+      text(ctx, f.t, x + 14, 388 - lift, { size: 12.5, weight: 650, color: p.ink })
+      text(ctx, f.d[0], x + 14, 408 - lift, { size: 10.5, color: '#8b94a6' })
+      text(ctx, f.d[1], x + 14, 423 - lift, { size: 10.5, color: '#8b94a6' })
+    })
 
     ctx.fillStyle = p.ink
     ctx.fillRect(0, 468, W, 90)
-    ctx.fillStyle = 'rgba(255,255,255,0.25)'
-    for (let i = 0; i < 4; i++) r(ctx, 40 + i * 110, 496, 68, 9, 4)
+    text(ctx, brand, 40, 496, { size: 13, weight: 700, color: 'rgba(255,255,255,0.9)' })
+    SAAS.nav.forEach((n, i) =>
+      text(ctx, n, 240 + i * 92, 496, { size: 11, color: 'rgba(255,255,255,0.45)' })
+    )
+    text(ctx, `© 2026 ${brand}. All rights reserved.`, 40, 526, {
+      size: 10, color: 'rgba(255,255,255,0.3)',
+    })
   } else if (variant === 1) {
     ctx.fillStyle = p.strong
     ctx.fillRect(0, 0, W, 110)
+    text(ctx, SHOP.h1, 40, 36, { size: 24, weight: 700, color: '#ffffff' })
+    text(ctx, SHOP.sub, 40, 62, { size: 13, color: 'rgba(255,255,255,0.8)' })
     ctx.fillStyle = 'rgba(255,255,255,0.95)'
-    r(ctx, 40, 24, 210, 18, 6)
-    r(ctx, 40, 50, 150, 12, 5)
-    ctx.fillStyle = 'rgba(255,255,255,0.85)'
-    r(ctx, 40, 72, 84, 18, 9)
+    r(ctx, 40, 76, 94, 24, 12)
+    text(ctx, SHOP.cta, 87, 88, { size: 11.5, weight: 700, color: p.strong, align: 'center' })
 
     for (let row = 0; row < 2; row++) {
       for (let i = 0; i < 4; i++) {
         const x = 32 + i * 148
         const y = 130 + row * 170
         const idx = row * 4 + i
+        const [pname, price] = SHOP.products[idx]
         const hot = near(cursor, x, y, 128, 150)
         const lift = hot ? 5 : 0
         ctx.fillStyle = '#f5f6fa'
         r(ctx, x, y - lift, 128, 150, 10)
         ctx.fillStyle = idx % 3 === 0 ? p.soft : idx % 3 === 1 ? '#e7eaf1' : p.mid + '55'
-        r(ctx, x + 10, y + 10 - lift, 108, 78, 8)
-        ctx.fillStyle = '#c9cfdb'
-        r(ctx, x + 10, y + 98 - lift, 80, 9, 4)
-        ctx.fillStyle = p.strong
-        r(ctx, x + 10, y + 114 - lift, 44, 11, 5)
+        r(ctx, x + 10, y + 10 - lift, 108, 74, 8)
+        text(ctx, pname, x + 10, y + 100 - lift, { size: 11.5, weight: 600, color: p.ink, max: 108 })
+        text(ctx, price, x + 10, y + 120 - lift, { size: 13, weight: 700, color: p.strong })
         ctx.fillStyle = hot ? p.strong : p.mid
-        r(ctx, x + 78, y + 110 - lift, 40, 20, 10)
+        r(ctx, x + 72, y + 110 - lift, 46, 22, 11)
+        text(ctx, 'Add', x + 95, y + 121 - lift, { size: 10.5, weight: 700, color: '#ffffff', align: 'center' })
       }
     }
     ctx.fillStyle = p.ink
     ctx.fillRect(0, 480, W, 80)
+    text(ctx, brand, 40, 508, { size: 13, weight: 700, color: 'rgba(255,255,255,0.9)' })
+    text(ctx, 'Free shipping over ₹1,499 · 7-day returns', 40, 530, {
+      size: 10.5, color: 'rgba(255,255,255,0.4)',
+    })
   } else {
     ctx.fillStyle = '#fbfbfd'
     ctx.fillRect(0, 0, W, 560)
-    ctx.fillStyle = p.ink
-    r(ctx, 40, 30, 320, 26, 7)
-    r(ctx, 40, 66, 224, 26, 7)
-    ctx.fillStyle = p.strong
-    r(ctx, 274, 66, 86, 26, 7)
-    ctx.fillStyle = '#aab2c2'
-    r(ctx, 40, 108, 268, 10, 5)
-    r(ctx, 40, 126, 212, 10, 5)
+    text(ctx, AGENCY.h1[0], 40, 42, { size: 30, weight: 700, color: p.ink })
+    text(ctx, AGENCY.h1[1], 40, 80, { size: 30, weight: 700, color: p.strong })
+    text(ctx, AGENCY.body[0], 40, 114, { size: 12.5, color: '#6c7689' })
+    text(ctx, AGENCY.body[1], 40, 132, { size: 12.5, color: '#6c7689' })
 
     const tiles = [
-      [40, 158, 170, 142], [222, 158, 170, 96], [222, 266, 170, 34], [404, 158, 196, 142],
+      [40, 158, 170, 142], [222, 158, 170, 142], [404, 158, 196, 142],
       [40, 312, 260, 120], [312, 312, 288, 120],
     ]
+    const fills = [p.mid, p.soft, p.strong, '#e9ecf3', p.mid]
+    const onDark = [true, false, true, false, true]
     tiles.forEach(([x, y, w, h], i) => {
       const hot = near(cursor, x, y, w, h)
       const k = hot ? 1 : 0
-      ctx.fillStyle = [p.mid, p.soft, '#e9ecf3', p.strong, p.soft, p.mid][i % 6]
-      ctx.globalAlpha = hot ? 1 : 0.85
+      ctx.fillStyle = fills[i]
+      ctx.globalAlpha = hot ? 1 : 0.9
       r(ctx, x - k * 3, y - k * 3, w + k * 6, h + k * 6, 10)
       ctx.globalAlpha = 1
+      const label = AGENCY.tiles[i]
+      const sub = ['Brand identity', 'Website', 'Brand + site', 'Packaging', 'Website'][i]
+      text(ctx, label, x + 14, y + h - 34, {
+        size: 12.5, weight: 700, color: onDark[i] ? '#ffffff' : p.ink, max: w - 28,
+      })
+      text(ctx, sub, x + 14, y + h - 17, {
+        size: 10.5, color: onDark[i] ? 'rgba(255,255,255,0.7)' : '#8b94a6', max: w - 28,
+      })
     })
+
+    text(ctx, 'Selected work · 2024—2026', 40, 460, { size: 11, weight: 650, color: '#9aa3b2' })
+    text(ctx, `${brand} — independent design studio`, 40, 484, { size: 11, color: '#b4bcc9' })
   }
 }
 
-function drawWebsite(ctx, p, variant, rand, t) {
+function drawWebsite(ctx, p, variant, rand, t, brand) {
   ctx.fillStyle = '#ffffff'
   ctx.fillRect(0, CHROME, W, VIEW_H)
 
-  const pageH = variant === 1 ? 560 : 560
+  const pageH = 560
   const maxScroll = Math.max(0, pageH - (VIEW_H - 44))
   const period = 11
   const pr = (t % period) / period
@@ -251,20 +361,23 @@ function drawWebsite(ctx, p, variant, rand, t) {
   ctx.rect(0, CHROME + 44, W, VIEW_H - 44)
   ctx.clip()
   ctx.translate(0, CHROME + 44 - scroll)
-  websitePage(ctx, p, variant, rand, t, pageCursor)
+  websitePage(ctx, p, variant, rand, t, pageCursor, brand)
   ctx.restore()
 
   // sticky nav
+  const navLinks = variant === 1 ? SHOP.nav : variant === 2 ? AGENCY.nav : SAAS.nav
+  const navCta = variant === 1 ? 'Cart (2)' : variant === 2 ? 'Enquire' : 'Sign up'
   ctx.fillStyle = '#ffffff'
   ctx.fillRect(0, CHROME, W, 44)
   ctx.fillStyle = p.strong
-  r(ctx, 28, CHROME + 14, 18, 18, 5)
-  ctx.fillStyle = p.ink
-  r(ctx, 54, CHROME + 19, 46, 9, 4)
-  ctx.fillStyle = '#c8cedb'
-  for (let i = 0; i < 4; i++) r(ctx, 300 + i * 56, CHROME + 20, 40, 8, 4)
+  r(ctx, 28, CHROME + 13, 20, 20, 6)
+  text(ctx, brand, 56, CHROME + 23, { size: 13, weight: 700, color: p.ink })
+  navLinks.forEach((n, i) =>
+    text(ctx, n, 286 + i * 62, CHROME + 23, { size: 11.5, weight: 500, color: '#8b94a6' })
+  )
   ctx.fillStyle = p.strong
-  r(ctx, W - 96, CHROME + 12, 68, 22, 11)
+  r(ctx, W - 104, CHROME + 11, 76, 24, 12)
+  text(ctx, navCta, W - 66, CHROME + 23, { size: 11, weight: 650, color: '#ffffff', align: 'center' })
   ctx.strokeStyle = '#eceff4'
   ctx.lineWidth = 1
   ctx.beginPath()
@@ -283,69 +396,75 @@ function drawWebsite(ctx, p, variant, rand, t) {
 
 /* ---------------- software dashboard (live data) ---------------- */
 
-function drawSoftware(ctx, p, variant, rand, t) {
+function drawSoftware(ctx, p, variant, rand, t, brand) {
+  const nav = variant === 1 ? CRM.nav : DASH.nav
   ctx.fillStyle = '#f7f8fc'
   ctx.fillRect(0, CHROME, W, VIEW_H)
 
   // sidebar with a cycling active item
-  const activeNav = Math.floor(t / 2.6) % 7
+  const activeNav = Math.floor(t / 2.6) % nav.length
   ctx.fillStyle = p.ink
   ctx.fillRect(0, CHROME, 132, VIEW_H)
   ctx.fillStyle = p.mid
-  r(ctx, 20, CHROME + 20, 20, 20, 6)
-  ctx.fillStyle = 'rgba(255,255,255,0.9)'
-  r(ctx, 48, CHROME + 26, 50, 9, 4)
-  for (let i = 0; i < 7; i++) {
+  r(ctx, 20, CHROME + 18, 22, 22, 7)
+  text(ctx, brand, 50, CHROME + 29, { size: 12, weight: 700, color: 'rgba(255,255,255,0.92)' })
+  nav.forEach((label, i) => {
     const active = i === activeNav
-    const y = CHROME + 62 + i * 34
+    const y = CHROME + 64 + i * 32
     if (active) {
       ctx.fillStyle = 'rgba(255,255,255,0.12)'
-      r(ctx, 12, y - 8, 108, 28, 8)
+      r(ctx, 12, y - 11, 108, 26, 8)
     }
     ctx.fillStyle = active ? p.mid : 'rgba(255,255,255,0.3)'
-    r(ctx, 22, y, 12, 12, 3)
-    ctx.fillStyle = active ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.28)'
-    r(ctx, 42, y + 3, 58, 8, 4)
-  }
+    r(ctx, 22, y - 4, 10, 10, 3)
+    text(ctx, label, 40, y + 1, {
+      size: 11, weight: active ? 650 : 500,
+      color: active ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.42)',
+    })
+  })
 
   // topbar
   ctx.fillStyle = '#ffffff'
   ctx.fillRect(132, CHROME, W - 132, 46)
-  ctx.fillStyle = p.ink
-  r(ctx, 152, CHROME + 18, 92, 11, 5)
+  text(ctx, variant === 1 ? CRM.title : DASH.title, 152, CHROME + 23, {
+    size: 14, weight: 700, color: p.ink,
+  })
   ctx.fillStyle = '#eef0f5'
-  r(ctx, W - 210, CHROME + 14, 110, 20, 10)
+  r(ctx, W - 212, CHROME + 13, 112, 22, 11)
+  text(ctx, DASH.search, W - 200, CHROME + 24, { size: 10, color: '#9aa3b2' })
   ctx.fillStyle = p.mid
   ctx.beginPath()
   ctx.arc(W - 62, CHROME + 23, 13, 0, Math.PI * 2)
   ctx.fill()
+  text(ctx, 'RS', W - 62, CHROME + 24, { size: 10, weight: 700, color: '#ffffff', align: 'center' })
   // live dot
   ctx.fillStyle = `rgba(16,185,129,${0.45 + Math.sin(t * 4) * 0.45})`
   ctx.beginPath()
-  ctx.arc(W - 186, CHROME + 24, 4.5, 0, Math.PI * 2)
+  ctx.arc(W - 242, CHROME + 24, 4.5, 0, Math.PI * 2)
   ctx.fill()
+  text(ctx, 'Live', W - 232, CHROME + 24, { size: 10, weight: 600, color: '#10b981' })
 
   if (variant === 0) {
     const tints = [p.strong, p.mid, '#64748b']
-    for (let i = 0; i < 3; i++) {
+    DASH.stats.forEach((stat, i) => {
       const x = 152 + i * 158
       ctx.fillStyle = '#ffffff'
       r(ctx, x, CHROME + 62, 142, 74, 10)
-      ctx.fillStyle = '#b9c0cd'
-      r(ctx, x + 14, CHROME + 76, 52, 8, 4)
-      // value bar "ticks" up and down
-      const wv = 40 + (Math.sin(t * 0.9 + i * 1.3) * 0.5 + 0.5) * 34
-      ctx.fillStyle = tints[i]
-      r(ctx, x + 14, CHROME + 94, wv, 18, 5)
-      ctx.fillStyle = p.soft
-      r(ctx, x + 92, CHROME + 92, 36, 20, 10)
-    }
+      text(ctx, stat.label, x + 14, CHROME + 80, { size: 10.5, weight: 600, color: '#9aa3b2' })
+      // value ticks slightly so it reads as live
+      const jitter = Math.sin(t * 0.9 + i * 1.3)
+      text(ctx, stat.value, x + 14, CHROME + 103, { size: 19, weight: 700, color: tints[i] })
+      ctx.fillStyle = jitter > 0 ? '#dcfce7' : p.soft
+      r(ctx, x + 14, CHROME + 116, 52, 16, 8)
+      text(ctx, stat.delta, x + 40, CHROME + 124, {
+        size: 9.5, weight: 700, color: jitter > 0 ? '#047857' : p.strong, align: 'center',
+      })
+    })
 
     // scrolling live area chart
     ctx.fillStyle = '#ffffff'
     r(ctx, 152, CHROME + 150, 300, 196, 10)
-    ctx.fillStyle = '#b9c0cd'
-    r(ctx, 168, CHROME + 166, 72, 9, 4)
+    text(ctx, DASH.chart, 168, CHROME + 170, { size: 11.5, weight: 650, color: p.ink })
 
     const base = CHROME + 318
     const step = 30
@@ -399,24 +518,32 @@ function drawSoftware(ctx, p, variant, rand, t) {
     ctx.beginPath()
     ctx.arc(cx, cy, 20, 0, Math.PI * 2)
     ctx.fill()
-    for (let i = 0; i < 3; i++) {
+    text(ctx, DASH.donut, 482, CHROME + 170, { size: 11.5, weight: 650, color: p.ink })
+    DASH.legend.forEach(([label, pct], i) => {
       ctx.fillStyle = [p.strong, p.mid, p.soft][i]
-      r(ctx, 482, CHROME + 268 + i * 24, 10, 10, 3)
-      ctx.fillStyle = '#c3cad6'
-      r(ctx, 500, CHROME + 270 + i * 24, 72, 8, 4)
-    }
+      r(ctx, 482, CHROME + 266 + i * 24, 10, 10, 3)
+      text(ctx, label, 500, CHROME + 271 + i * 24, { size: 10.5, color: '#6c7689' })
+      text(ctx, pct, 600, CHROME + 271 + i * 24, {
+        size: 10.5, weight: 650, color: p.ink, align: 'right',
+      })
+    })
   } else {
     // CRM table: rows slide in from the top
     ctx.fillStyle = '#ffffff'
     r(ctx, 152, CHROME + 62, W - 176, 284, 10)
-    ctx.fillStyle = p.ink
-    r(ctx, 170, CHROME + 80, 88, 11, 5)
+    text(ctx, 'Recent activity', 170, CHROME + 86, { size: 12, weight: 650, color: p.ink })
     ctx.fillStyle = p.strong
-    r(ctx, W - 118, CHROME + 76, 78, 22, 11)
+    r(ctx, W - 124, CHROME + 74, 84, 24, 12)
+    text(ctx, CRM.add, W - 82, CHROME + 86, {
+      size: 10.5, weight: 650, color: '#ffffff', align: 'center',
+    })
+
+    const colX = [182, 302, 422, 512]
     ctx.fillStyle = '#f1f3f8'
     ctx.fillRect(170, CHROME + 110, W - 212, 26)
-    ctx.fillStyle = '#9aa3b2'
-    ;[0, 120, 240, 330].forEach((dx, i) => r(ctx, 182 + dx, CHROME + 119, [68, 84, 56, 44][i], 8, 4))
+    CRM.cols.forEach((c, i) =>
+      text(ctx, c, colX[i], CHROME + 123, { size: 10, weight: 700, color: '#8b94a6' })
+    )
 
     const rowH = 32
     const feed = t * 0.55
@@ -430,21 +557,30 @@ function drawSoftware(ctx, p, variant, rand, t) {
     for (let i = -1; i < 7; i++) {
       const y = CHROME + 144 + i * rowH + offset
       const n = topIndex - i
+      const row = CRM.rows[((n % CRM.rows.length) + CRM.rows.length) % CRM.rows.length]
+      const [name, email, status, added] = row
       const fresh = i <= 0
       ctx.fillStyle = n % 2 ? '#fbfcfe' : '#ffffff'
       ctx.fillRect(170, y, W - 212, rowH - 2)
       ctx.globalAlpha = fresh ? clamp(offset / rowH) : 1
+
+      // avatar with initials
       ctx.fillStyle = [p.strong, p.mid, '#94a3b8'][Math.abs(n) % 3]
       ctx.beginPath()
       ctx.arc(192, y + 15, 9, 0, Math.PI * 2)
       ctx.fill()
-      ctx.fillStyle = '#cbd2dd'
-      r(ctx, 210, y + 11, 50 + (Math.abs(n) % 4) * 10, 8, 4)
-      r(ctx, 302, y + 11, 70 + (Math.abs(n) % 3) * 14, 8, 4)
-      ctx.fillStyle = fresh ? '#d1fae5' : p.soft
-      r(ctx, 422, y + 7, 54, 16, 8)
-      ctx.fillStyle = '#dde2ea'
-      r(ctx, 512, y + 11, 44, 8, 4)
+      const initials = name.split(' ').map((w) => w[0]).join('')
+      text(ctx, initials, 192, y + 16, { size: 8.5, weight: 700, color: '#ffffff', align: 'center' })
+
+      text(ctx, name, 210, y + 15, { size: 11, weight: 600, color: p.ink, max: 86 })
+      text(ctx, email, colX[1], y + 15, { size: 10, color: '#8b94a6', max: 112 })
+
+      const sc = CRM.statusColor[status] || p.strong
+      ctx.fillStyle = sc + '22'
+      r(ctx, colX[2] - 4, y + 6, 62, 18, 9)
+      text(ctx, status, colX[2] + 27, y + 16, { size: 9.5, weight: 700, color: sc, align: 'center' })
+
+      text(ctx, added, colX[3], y + 15, { size: 10, color: '#9aa3b2' })
       ctx.globalAlpha = 1
     }
     ctx.restore()
@@ -453,7 +589,7 @@ function drawSoftware(ctx, p, variant, rand, t) {
 
 /* ---------------- factory ---------------- */
 
-export function createPanelTexture(kind = 'website', seed = 0, paletteIndex = 0) {
+export function createPanelTexture(kind = 'website', seed = 0, paletteIndex = 0, variantOverride) {
   const canvas = document.createElement('canvas')
   canvas.width = W
   canvas.height = H
@@ -464,13 +600,18 @@ export function createPanelTexture(kind = 'website', seed = 0, paletteIndex = 0)
 
   const p = PALETTES[paletteIndex % PALETTES.length]
   const rand = seeded(seed + 1)
-  const variant = Math.floor(rand(0) * (kind === 'website' ? 3 : 2))
-  const label = kind === 'website' ? 'https://clientsite.com' : 'app.dashboard.io'
+  const variantCount = kind === 'website' ? 3 : 2
+  const variant = variantOverride != null
+    ? variantOverride % variantCount
+    : Math.floor(rand(0) * variantCount)
+  const brand = BRANDS[Math.floor(rand(3) * BRANDS.length)]
+  const slug = brand.toLowerCase().replace(/[^a-z]/g, '')
+  const label = kind === 'website' ? `https://${slug}.com` : `app.${slug}.io/dashboard`
 
   const draw = (t) => {
     ctx.clearRect(0, 0, W, H)
-    if (kind === 'website') drawWebsite(ctx, p, variant, rand, t)
-    else drawSoftware(ctx, p, variant, rand, t)
+    if (kind === 'website') drawWebsite(ctx, p, variant, rand, t, brand)
+    else drawSoftware(ctx, p, variant, rand, t, brand)
     drawChrome(ctx, label)
     texture.needsUpdate = true
   }

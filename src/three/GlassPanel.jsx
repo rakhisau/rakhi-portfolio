@@ -12,13 +12,14 @@ export default function GlassPanel({
   kind = 'website',
   seed = 0,
   palette = 0,
+  variant,
   fps = 12,
   floatSpeed = 1,
 }) {
   const group = useRef(null)
   const { texture, draw, accent } = useMemo(
-    () => createPanelTexture(kind, seed, palette),
-    [kind, seed, palette]
+    () => createPanelTexture(kind, seed, palette, variant),
+    [kind, seed, palette, variant]
   )
   const phase = useMemo(() => seed * 1.7, [seed])
   // stagger redraws so panels don't all upload on the same frame
