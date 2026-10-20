@@ -40,7 +40,7 @@ function World({ tier }) {
         <GlassPanel position={[6.4, -0.6, -4.5]} rotation={[0, -0.55, 0]} kind="software" seed={2} palette={1} variant={0} fps={s.fps} />
       )}
       {full && (
-        <WorkflowPanel position={[1.8, 4.4, -11]} rotation={[0, 0.1, 0]} accent="#be123c" seed={3} scale={0.85} />
+        <WorkflowPanel position={[1.8, 4.4, -11]} rotation={[0, 0.1, 0]} accent="#fb7185" seed={3} scale={0.85} />
       )}
       <AgentNode position={[-2.4, -2.4, -6]} color={VIOLET} seed={1} size={0.36} />
       <AgentNode position={[3.4, 2.4, -7]} color={CYAN} seed={2} size={0.3} />
@@ -61,7 +61,7 @@ function World({ tier }) {
           <DataFlow from={[-5.6, 1.4, -15]} to={[0.4, 3.4, -19]} color={VIOLET} seed={2.6} sag={0.6} />
         </>
       )}
-      <WorkflowPanel position={[6.6, -0.9, -23.5]} rotation={[0, -0.5, 0]} accent="#6d28d9" seed={8} />
+      <WorkflowPanel position={[6.6, -0.9, -23.5]} rotation={[0, -0.5, 0]} accent="#a78bfa" seed={8} />
 
       {/* ---------- Chapter 3: the work ---------- */}
       <GlassPanel position={[-6.8, 1.8, -25]} rotation={[0, 0.6, 0.03]} kind="website" seed={9} palette={3} variant={1} fps={s.fps} />

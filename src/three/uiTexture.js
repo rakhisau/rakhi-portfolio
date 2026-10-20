@@ -1,12 +1,27 @@
 import * as THREE from 'three'
 
+// Accents are bright so they carry on a dark surface; the neutral
+// layers are shared, so every panel reads as a lit screen in the scene
+// rather than a white rectangle.
+const SHELL = {
+  bg: '#0f1424',
+  surface: '#171d30',
+  surfaceAlt: '#1d2439',
+  line: '#2a3350',
+  chrome: '#1a2032',
+  tStrong: '#eaeefb',
+  tMid: '#9aa5c0',
+  tFaint: '#616c88',
+  footer: '#0a0e1a',
+}
+
 export const PALETTES = [
-  { key: 'violet', strong: '#6d28d9', mid: '#8b5cf6', soft: '#ede9fe', ink: '#1e1b33' },
-  { key: 'cyan', strong: '#0e7490', mid: '#22d3ee', soft: '#cffafe', ink: '#0d2b33' },
-  { key: 'amber', strong: '#b45309', mid: '#f59e0b', soft: '#fef3c7', ink: '#3a2408' },
-  { key: 'rose', strong: '#be123c', mid: '#fb7185', soft: '#ffe4e6', ink: '#3b0d1b' },
-  { key: 'emerald', strong: '#047857', mid: '#34d399', soft: '#d1fae5', ink: '#06281d' },
-  { key: 'indigo', strong: '#3730a3', mid: '#818cf8', soft: '#e0e7ff', ink: '#171a3a' },
+  { key: 'violet', strong: '#a78bfa', mid: '#8b5cf6', deep: '#6d28d9', ...SHELL },
+  { key: 'cyan', strong: '#22d3ee', mid: '#0ea5e9', deep: '#0e7490', ...SHELL },
+  { key: 'amber', strong: '#fbbf24', mid: '#f59e0b', deep: '#b45309', ...SHELL },
+  { key: 'rose', strong: '#fb7185', mid: '#f43f5e', deep: '#be123c', ...SHELL },
+  { key: 'emerald', strong: '#34d399', mid: '#10b981', deep: '#047857', ...SHELL },
+  { key: 'indigo', strong: '#818cf8', mid: '#6366f1', deep: '#3730a3', ...SHELL },
 ]
 
 const W = 640
@@ -32,7 +47,7 @@ const seeded = (seed) => (n) => {
 const FONT = 'system-ui, -apple-system, Segoe UI, Roboto, sans-serif'
 
 function text(ctx, str, x, y, opts = {}) {
-  const { size = 12, weight = 500, color = '#1e2434', align = 'left', max } = opts
+  const { size = 12, weight = 500, color = '#eaeefb', align = 'left', max } = opts
   ctx.font = `${weight} ${size}px ${FONT}`
   ctx.fillStyle = color
   ctx.textAlign = align
@@ -116,8 +131,8 @@ const CRM = {
 
 /* ---------------- shared chrome + cursor ---------------- */
 
-function drawChrome(ctx, label) {
-  ctx.fillStyle = '#eef0f5'
+function drawChrome(ctx, label, p) {
+  ctx.fillStyle = p.chrome
   ctx.fillRect(0, 0, W, CHROME)
   ;['#ff5f57', '#febc2e', '#28c840'].forEach((c, i) => {
     ctx.fillStyle = c
@@ -125,12 +140,15 @@ function drawChrome(ctx, label) {
     ctx.arc(24 + i * 20, 19, 6, 0, Math.PI * 2)
     ctx.fill()
   })
-  ctx.fillStyle = '#ffffff'
+  ctx.fillStyle = p.bg
   r(ctx, 104, 9, W - 150, 20, 10)
-  ctx.fillStyle = '#9aa3b2'
-  ctx.font = '500 12px system-ui, sans-serif'
-  ctx.textBaseline = 'middle'
-  ctx.fillText(label, 118, 20)
+  text(ctx, label, 118, 20, { size: 12, color: p.tFaint })
+  ctx.strokeStyle = p.line
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(0, CHROME)
+  ctx.lineTo(W, CHROME)
+  ctx.stroke()
 }
 
 // Pointer that drifts between hotspots and clicks when it arrives.
@@ -163,7 +181,7 @@ function drawCursor(ctx, { x, y, local }, accent) {
 
   ctx.save()
   ctx.translate(x, y)
-  ctx.fillStyle = '#10131c'
+  ctx.fillStyle = '#ffffff'
   ctx.beginPath()
   ctx.moveTo(0, 0)
   ctx.lineTo(0, 17)
@@ -174,7 +192,7 @@ function drawCursor(ctx, { x, y, local }, accent) {
   ctx.lineTo(13, 11.4)
   ctx.closePath()
   ctx.fill()
-  ctx.strokeStyle = '#ffffff'
+  ctx.strokeStyle = '#0b1020'
   ctx.lineWidth = 1.2
   ctx.stroke()
   ctx.restore()
@@ -188,94 +206,101 @@ const near = (cursor, x, y, w, h) =>
 function websitePage(ctx, p, variant, rand, t, cursor, brand) {
   // nav is drawn by the caller on top; this is the scrolling body
   if (variant === 0) {
-    const g = ctx.createLinearGradient(0, 0, W, 240)
-    g.addColorStop(0, p.soft)
-    g.addColorStop(1, '#ffffff')
+    ctx.fillStyle = p.bg
+    ctx.fillRect(0, 0, W, 560)
+    // accent glow behind the hero
+    const g = ctx.createRadialGradient(150, 90, 10, 150, 90, 420)
+    g.addColorStop(0, p.deep + '66')
+    g.addColorStop(1, p.bg + '00')
     ctx.fillStyle = g
     ctx.fillRect(0, 0, W, 240)
 
     // badge
-    ctx.fillStyle = p.strong
+    ctx.fillStyle = p.deep
     r(ctx, 40, 26, 132, 22, 11)
     text(ctx, SAAS.badge, 50, 37, { size: 10, weight: 700, color: '#ffffff' })
 
-    text(ctx, SAAS.h1[0], 40, 74, { size: 27, weight: 700, color: p.ink })
-    text(ctx, SAAS.h1[1], 40, 104, { size: 27, weight: 700, color: p.ink })
-    text(ctx, SAAS.body[0], 40, 136, { size: 12.5, color: '#6c7689' })
-    text(ctx, SAAS.body[1], 40, 154, { size: 12.5, color: '#6c7689' })
+    text(ctx, SAAS.h1[0], 40, 74, { size: 27, weight: 700, color: p.tStrong })
+    text(ctx, SAAS.h1[1], 40, 104, { size: 27, weight: 700, color: p.strong })
+    text(ctx, SAAS.body[0], 40, 136, { size: 12.5, color: p.tMid })
+    text(ctx, SAAS.body[1], 40, 154, { size: 12.5, color: p.tMid })
 
     // CTA reacts to the cursor
     const hot = near(cursor, 40, 174, 128, 32)
-    ctx.fillStyle = hot ? p.mid : p.strong
+    ctx.fillStyle = hot ? p.strong : p.mid
     r(ctx, 40 - (hot ? 2 : 0), 174 - (hot ? 2 : 0), 128 + (hot ? 4 : 0), 32 + (hot ? 4 : 0), 16)
-    text(ctx, SAAS.cta[0], 104, 190, { size: 12.5, weight: 650, color: '#ffffff', align: 'center' })
-    ctx.strokeStyle = '#cfd6e4'
+    text(ctx, SAAS.cta[0], 104, 190, { size: 12.5, weight: 650, color: '#0b1020', align: 'center' })
+    ctx.strokeStyle = p.line
     ctx.lineWidth = 2
     ctx.beginPath()
     ctx.roundRect(180, 174, 110, 32, 16)
     ctx.stroke()
-    text(ctx, SAAS.cta[1], 235, 190, { size: 12.5, weight: 600, color: p.ink, align: 'center' })
+    text(ctx, SAAS.cta[1], 235, 190, { size: 12.5, weight: 600, color: p.tStrong, align: 'center' })
 
     // hero visual with a live mini bar chart
-    ctx.fillStyle = '#ffffff'
+    ctx.fillStyle = p.surface
     r(ctx, 330, 30, 272, 174, 12)
-    ctx.strokeStyle = '#e4e8f0'
+    ctx.strokeStyle = p.line
     ctx.beginPath()
     ctx.roundRect(330, 30, 272, 174, 12)
     ctx.stroke()
-    ctx.fillStyle = p.mid
+    ctx.fillStyle = p.deep
     r(ctx, 346, 46, 240, 70, 8)
     text(ctx, 'Monthly signups', 356, 58, { size: 10, weight: 650, color: 'rgba(255,255,255,0.9)' })
     for (let i = 0; i < 7; i++) {
       const h = 10 + (Math.sin(t * 1.6 + i * 0.8) * 0.5 + 0.5) * 34
-      ctx.fillStyle = 'rgba(255,255,255,0.9)'
+      ctx.fillStyle = p.strong
       r(ctx, 360 + i * 32, 106 - h, 18, h, 3)
     }
-    text(ctx, 'Revenue this quarter', 346, 131, { size: 11, weight: 600, color: p.ink })
-    text(ctx, '₹12,40,000 · up 18% on last quarter', 346, 149, { size: 10.5, color: '#8b94a6' })
-    ctx.fillStyle = p.soft
+    text(ctx, 'Revenue this quarter', 346, 131, { size: 11, weight: 600, color: p.tStrong })
+    text(ctx, '₹12,40,000 · up 18% on last quarter', 346, 149, { size: 10.5, color: p.tMid })
+    ctx.fillStyle = p.surfaceAlt
     r(ctx, 470, 158, 116, 32, 8)
     text(ctx, 'View report →', 528, 174, { size: 10.5, weight: 650, color: p.strong, align: 'center' })
 
     // logo strip
-    ctx.fillStyle = '#f6f7fa'
+    ctx.fillStyle = p.surface
     ctx.fillRect(0, 240, W, 52)
-    text(ctx, SAAS.logos, 40, 266, { size: 10, weight: 700, color: '#9aa3b2' })
-    ctx.fillStyle = '#d6dbe5'
+    text(ctx, SAAS.logos, 40, 266, { size: 10, weight: 700, color: p.tFaint })
     BRANDS.slice(0, 4).forEach((b, i) =>
-      text(ctx, b, 240 + i * 100, 266, { size: 12, weight: 700, color: '#c3cad6' })
+      text(ctx, b, 240 + i * 100, 266, { size: 12, weight: 700, color: p.tFaint })
     )
 
     // feature cards lift in sequence
     SAAS.features.forEach((f, i) => {
       const lift = Math.max(0, Math.sin(t * 1.1 - i * 0.9)) * 6
       const x = 40 + i * 190
-      ctx.fillStyle = '#f4f5f9'
+      ctx.fillStyle = p.surface
       r(ctx, x, 316 - lift, 170, 128, 12)
-      ctx.fillStyle = [p.soft, p.mid, p.soft][i]
+      ctx.strokeStyle = p.line
+      ctx.lineWidth = 1
+      ctx.beginPath()
+      ctx.roundRect(x, 316 - lift, 170, 128, 12)
+      ctx.stroke()
+      ctx.fillStyle = [p.mid, p.strong, p.deep][i]
       r(ctx, x + 14, 330 - lift, 36, 36, 10)
-      text(ctx, f.t, x + 14, 388 - lift, { size: 12.5, weight: 650, color: p.ink })
-      text(ctx, f.d[0], x + 14, 408 - lift, { size: 10.5, color: '#8b94a6' })
-      text(ctx, f.d[1], x + 14, 423 - lift, { size: 10.5, color: '#8b94a6' })
+      text(ctx, f.t, x + 14, 388 - lift, { size: 12.5, weight: 650, color: p.tStrong })
+      text(ctx, f.d[0], x + 14, 408 - lift, { size: 10.5, color: p.tMid })
+      text(ctx, f.d[1], x + 14, 423 - lift, { size: 10.5, color: p.tMid })
     })
 
-    ctx.fillStyle = p.ink
+    ctx.fillStyle = p.footer
     ctx.fillRect(0, 468, W, 90)
-    text(ctx, brand, 40, 496, { size: 13, weight: 700, color: 'rgba(255,255,255,0.9)' })
+    text(ctx, brand, 40, 496, { size: 13, weight: 700, color: p.tStrong })
     SAAS.nav.forEach((n, i) =>
-      text(ctx, n, 240 + i * 92, 496, { size: 11, color: 'rgba(255,255,255,0.45)' })
+      text(ctx, n, 240 + i * 92, 496, { size: 11, color: p.tFaint })
     )
-    text(ctx, `© 2026 ${brand}. All rights reserved.`, 40, 526, {
-      size: 10, color: 'rgba(255,255,255,0.3)',
-    })
+    text(ctx, `© 2026 ${brand}. All rights reserved.`, 40, 526, { size: 10, color: p.tFaint })
   } else if (variant === 1) {
-    ctx.fillStyle = p.strong
+    ctx.fillStyle = p.bg
+    ctx.fillRect(0, 0, W, 560)
+    ctx.fillStyle = p.deep
     ctx.fillRect(0, 0, W, 110)
     text(ctx, SHOP.h1, 40, 36, { size: 24, weight: 700, color: '#ffffff' })
-    text(ctx, SHOP.sub, 40, 62, { size: 13, color: 'rgba(255,255,255,0.8)' })
-    ctx.fillStyle = 'rgba(255,255,255,0.95)'
+    text(ctx, SHOP.sub, 40, 62, { size: 13, color: 'rgba(255,255,255,0.85)' })
+    ctx.fillStyle = p.strong
     r(ctx, 40, 76, 94, 24, 12)
-    text(ctx, SHOP.cta, 87, 88, { size: 11.5, weight: 700, color: p.strong, align: 'center' })
+    text(ctx, SHOP.cta, 87, 88, { size: 11.5, weight: 700, color: '#0b1020', align: 'center' })
 
     for (let row = 0; row < 2; row++) {
       for (let i = 0; i < 4; i++) {
@@ -285,61 +310,66 @@ function websitePage(ctx, p, variant, rand, t, cursor, brand) {
         const [pname, price] = SHOP.products[idx]
         const hot = near(cursor, x, y, 128, 150)
         const lift = hot ? 5 : 0
-        ctx.fillStyle = '#f5f6fa'
+        ctx.fillStyle = p.surface
         r(ctx, x, y - lift, 128, 150, 10)
-        ctx.fillStyle = idx % 3 === 0 ? p.soft : idx % 3 === 1 ? '#e7eaf1' : p.mid + '55'
+        ctx.strokeStyle = hot ? p.strong : p.line
+        ctx.lineWidth = 1
+        ctx.beginPath()
+        ctx.roundRect(x, y - lift, 128, 150, 10)
+        ctx.stroke()
+        ctx.fillStyle = [p.deep, p.surfaceAlt, p.mid + '66'][idx % 3]
         r(ctx, x + 10, y + 10 - lift, 108, 74, 8)
-        text(ctx, pname, x + 10, y + 100 - lift, { size: 11.5, weight: 600, color: p.ink, max: 108 })
+        text(ctx, pname, x + 10, y + 100 - lift, { size: 11.5, weight: 600, color: p.tStrong, max: 108 })
         text(ctx, price, x + 10, y + 120 - lift, { size: 13, weight: 700, color: p.strong })
         ctx.fillStyle = hot ? p.strong : p.mid
         r(ctx, x + 72, y + 110 - lift, 46, 22, 11)
-        text(ctx, 'Add', x + 95, y + 121 - lift, { size: 10.5, weight: 700, color: '#ffffff', align: 'center' })
+        text(ctx, 'Add', x + 95, y + 121 - lift, {
+          size: 10.5, weight: 700, color: '#0b1020', align: 'center',
+        })
       }
     }
-    ctx.fillStyle = p.ink
+    ctx.fillStyle = p.footer
     ctx.fillRect(0, 480, W, 80)
-    text(ctx, brand, 40, 508, { size: 13, weight: 700, color: 'rgba(255,255,255,0.9)' })
-    text(ctx, 'Free shipping over ₹1,499 · 7-day returns', 40, 530, {
-      size: 10.5, color: 'rgba(255,255,255,0.4)',
-    })
+    text(ctx, brand, 40, 508, { size: 13, weight: 700, color: p.tStrong })
+    text(ctx, 'Free shipping over ₹1,499 · 7-day returns', 40, 530, { size: 10.5, color: p.tFaint })
   } else {
-    ctx.fillStyle = '#fbfbfd'
+    ctx.fillStyle = p.bg
     ctx.fillRect(0, 0, W, 560)
-    text(ctx, AGENCY.h1[0], 40, 42, { size: 30, weight: 700, color: p.ink })
+    text(ctx, AGENCY.h1[0], 40, 42, { size: 30, weight: 700, color: p.tStrong })
     text(ctx, AGENCY.h1[1], 40, 80, { size: 30, weight: 700, color: p.strong })
-    text(ctx, AGENCY.body[0], 40, 114, { size: 12.5, color: '#6c7689' })
-    text(ctx, AGENCY.body[1], 40, 132, { size: 12.5, color: '#6c7689' })
+    text(ctx, AGENCY.body[0], 40, 114, { size: 12.5, color: p.tMid })
+    text(ctx, AGENCY.body[1], 40, 132, { size: 12.5, color: p.tMid })
 
     const tiles = [
       [40, 158, 170, 142], [222, 158, 170, 142], [404, 158, 196, 142],
       [40, 312, 260, 120], [312, 312, 288, 120],
     ]
-    const fills = [p.mid, p.soft, p.strong, '#e9ecf3', p.mid]
-    const onDark = [true, false, true, false, true]
+    const fills = [p.deep, p.surface, p.mid, p.surfaceAlt, p.deep]
     tiles.forEach(([x, y, w, h], i) => {
       const hot = near(cursor, x, y, w, h)
       const k = hot ? 1 : 0
       ctx.fillStyle = fills[i]
-      ctx.globalAlpha = hot ? 1 : 0.9
       r(ctx, x - k * 3, y - k * 3, w + k * 6, h + k * 6, 10)
-      ctx.globalAlpha = 1
+      ctx.strokeStyle = hot ? p.strong : p.line
+      ctx.lineWidth = 1
+      ctx.beginPath()
+      ctx.roundRect(x - k * 3, y - k * 3, w + k * 6, h + k * 6, 10)
+      ctx.stroke()
       const label = AGENCY.tiles[i]
       const sub = ['Brand identity', 'Website', 'Brand + site', 'Packaging', 'Website'][i]
       text(ctx, label, x + 14, y + h - 34, {
-        size: 12.5, weight: 700, color: onDark[i] ? '#ffffff' : p.ink, max: w - 28,
+        size: 12.5, weight: 700, color: p.tStrong, max: w - 28,
       })
-      text(ctx, sub, x + 14, y + h - 17, {
-        size: 10.5, color: onDark[i] ? 'rgba(255,255,255,0.7)' : '#8b94a6', max: w - 28,
-      })
+      text(ctx, sub, x + 14, y + h - 17, { size: 10.5, color: p.tMid, max: w - 28 })
     })
 
-    text(ctx, 'Selected work · 2024—2026', 40, 460, { size: 11, weight: 650, color: '#9aa3b2' })
-    text(ctx, `${brand} — independent design studio`, 40, 484, { size: 11, color: '#b4bcc9' })
+    text(ctx, 'Selected work · 2024—2026', 40, 460, { size: 11, weight: 650, color: p.tFaint })
+    text(ctx, `${brand} — independent design studio`, 40, 484, { size: 11, color: p.tFaint })
   }
 }
 
 function drawWebsite(ctx, p, variant, rand, t, brand) {
-  ctx.fillStyle = '#ffffff'
+  ctx.fillStyle = p.bg
   ctx.fillRect(0, CHROME, W, VIEW_H)
 
   const pageH = 560
@@ -367,18 +397,20 @@ function drawWebsite(ctx, p, variant, rand, t, brand) {
   // sticky nav
   const navLinks = variant === 1 ? SHOP.nav : variant === 2 ? AGENCY.nav : SAAS.nav
   const navCta = variant === 1 ? 'Cart (2)' : variant === 2 ? 'Enquire' : 'Sign up'
-  ctx.fillStyle = '#ffffff'
+  ctx.fillStyle = p.surface
   ctx.fillRect(0, CHROME, W, 44)
   ctx.fillStyle = p.strong
   r(ctx, 28, CHROME + 13, 20, 20, 6)
-  text(ctx, brand, 56, CHROME + 23, { size: 13, weight: 700, color: p.ink })
+  text(ctx, brand, 56, CHROME + 23, { size: 13, weight: 700, color: p.tStrong })
   navLinks.forEach((n, i) =>
-    text(ctx, n, 286 + i * 62, CHROME + 23, { size: 11.5, weight: 500, color: '#8b94a6' })
+    text(ctx, n, 286 + i * 62, CHROME + 23, { size: 11.5, weight: 500, color: p.tMid })
   )
   ctx.fillStyle = p.strong
   r(ctx, W - 104, CHROME + 11, 76, 24, 12)
-  text(ctx, navCta, W - 66, CHROME + 23, { size: 11, weight: 650, color: '#ffffff', align: 'center' })
-  ctx.strokeStyle = '#eceff4'
+  text(ctx, navCta, W - 66, CHROME + 23, {
+    size: 11, weight: 650, color: '#0b1020', align: 'center',
+  })
+  ctx.strokeStyle = p.line
   ctx.lineWidth = 1
   ctx.beginPath()
   ctx.moveTo(0, CHROME + 44)
@@ -388,7 +420,7 @@ function drawWebsite(ctx, p, variant, rand, t, brand) {
   // scrollbar
   const track = VIEW_H - 44
   const thumb = Math.max(28, track * (track / pageH))
-  ctx.fillStyle = '#d9dee7'
+  ctx.fillStyle = p.line
   r(ctx, W - 6, CHROME + 44 + (maxScroll ? (scroll / maxScroll) * (track - thumb) : 0), 4, thumb, 2)
 
   drawCursor(ctx, cursor, p.strong)
@@ -398,73 +430,78 @@ function drawWebsite(ctx, p, variant, rand, t, brand) {
 
 function drawSoftware(ctx, p, variant, rand, t, brand) {
   const nav = variant === 1 ? CRM.nav : DASH.nav
-  ctx.fillStyle = '#f7f8fc'
+  ctx.fillStyle = p.bg
   ctx.fillRect(0, CHROME, W, VIEW_H)
 
   // sidebar with a cycling active item
   const activeNav = Math.floor(t / 2.6) % nav.length
-  ctx.fillStyle = p.ink
+  ctx.fillStyle = p.footer
   ctx.fillRect(0, CHROME, 132, VIEW_H)
-  ctx.fillStyle = p.mid
+  ctx.fillStyle = p.strong
   r(ctx, 20, CHROME + 18, 22, 22, 7)
-  text(ctx, brand, 50, CHROME + 29, { size: 12, weight: 700, color: 'rgba(255,255,255,0.92)' })
+  text(ctx, brand, 50, CHROME + 29, { size: 12, weight: 700, color: p.tStrong })
   nav.forEach((label, i) => {
     const active = i === activeNav
     const y = CHROME + 64 + i * 32
     if (active) {
-      ctx.fillStyle = 'rgba(255,255,255,0.12)'
+      ctx.fillStyle = p.strong + '26'
       r(ctx, 12, y - 11, 108, 26, 8)
     }
-    ctx.fillStyle = active ? p.mid : 'rgba(255,255,255,0.3)'
+    ctx.fillStyle = active ? p.strong : p.tFaint
     r(ctx, 22, y - 4, 10, 10, 3)
     text(ctx, label, 40, y + 1, {
       size: 11, weight: active ? 650 : 500,
-      color: active ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.42)',
+      color: active ? p.tStrong : p.tFaint,
     })
   })
 
   // topbar
-  ctx.fillStyle = '#ffffff'
+  ctx.fillStyle = p.surface
   ctx.fillRect(132, CHROME, W - 132, 46)
   text(ctx, variant === 1 ? CRM.title : DASH.title, 152, CHROME + 23, {
-    size: 14, weight: 700, color: p.ink,
+    size: 14, weight: 700, color: p.tStrong,
   })
-  ctx.fillStyle = '#eef0f5'
+  ctx.fillStyle = p.surfaceAlt
   r(ctx, W - 212, CHROME + 13, 112, 22, 11)
-  text(ctx, DASH.search, W - 200, CHROME + 24, { size: 10, color: '#9aa3b2' })
-  ctx.fillStyle = p.mid
+  text(ctx, DASH.search, W - 200, CHROME + 24, { size: 10, color: p.tFaint })
+  ctx.fillStyle = p.strong
   ctx.beginPath()
   ctx.arc(W - 62, CHROME + 23, 13, 0, Math.PI * 2)
   ctx.fill()
-  text(ctx, 'RS', W - 62, CHROME + 24, { size: 10, weight: 700, color: '#ffffff', align: 'center' })
+  text(ctx, 'RS', W - 62, CHROME + 24, { size: 10, weight: 700, color: '#0b1020', align: 'center' })
   // live dot
-  ctx.fillStyle = `rgba(16,185,129,${0.45 + Math.sin(t * 4) * 0.45})`
+  ctx.fillStyle = `rgba(52,211,153,${0.45 + Math.sin(t * 4) * 0.45})`
   ctx.beginPath()
   ctx.arc(W - 242, CHROME + 24, 4.5, 0, Math.PI * 2)
   ctx.fill()
-  text(ctx, 'Live', W - 232, CHROME + 24, { size: 10, weight: 600, color: '#10b981' })
+  text(ctx, 'Live', W - 232, CHROME + 24, { size: 10, weight: 600, color: '#34d399' })
 
   if (variant === 0) {
-    const tints = [p.strong, p.mid, '#64748b']
+    const tints = [p.strong, p.mid, '#94a3b8']
     DASH.stats.forEach((stat, i) => {
       const x = 152 + i * 158
-      ctx.fillStyle = '#ffffff'
+      ctx.fillStyle = p.surface
       r(ctx, x, CHROME + 62, 142, 74, 10)
-      text(ctx, stat.label, x + 14, CHROME + 80, { size: 10.5, weight: 600, color: '#9aa3b2' })
+      ctx.strokeStyle = p.line
+      ctx.lineWidth = 1
+      ctx.beginPath()
+      ctx.roundRect(x, CHROME + 62, 142, 74, 10)
+      ctx.stroke()
+      text(ctx, stat.label, x + 14, CHROME + 80, { size: 10.5, weight: 600, color: p.tFaint })
       // value ticks slightly so it reads as live
       const jitter = Math.sin(t * 0.9 + i * 1.3)
       text(ctx, stat.value, x + 14, CHROME + 103, { size: 19, weight: 700, color: tints[i] })
-      ctx.fillStyle = jitter > 0 ? '#dcfce7' : p.soft
+      ctx.fillStyle = jitter > 0 ? 'rgba(52,211,153,0.18)' : p.strong + '26'
       r(ctx, x + 14, CHROME + 116, 52, 16, 8)
       text(ctx, stat.delta, x + 40, CHROME + 124, {
-        size: 9.5, weight: 700, color: jitter > 0 ? '#047857' : p.strong, align: 'center',
+        size: 9.5, weight: 700, color: jitter > 0 ? '#34d399' : p.strong, align: 'center',
       })
     })
 
     // scrolling live area chart
-    ctx.fillStyle = '#ffffff'
+    ctx.fillStyle = p.surface
     r(ctx, 152, CHROME + 150, 300, 196, 10)
-    text(ctx, DASH.chart, 168, CHROME + 170, { size: 11.5, weight: 650, color: p.ink })
+    text(ctx, DASH.chart, 168, CHROME + 170, { size: 11.5, weight: 650, color: p.tStrong })
 
     const base = CHROME + 318
     const step = 30
@@ -498,7 +535,7 @@ function drawSoftware(ctx, p, variant, rand, t, brand) {
     ctx.restore()
 
     // donut that fills
-    ctx.fillStyle = '#ffffff'
+    ctx.fillStyle = p.surface
     r(ctx, 466, CHROME + 150, 150, 196, 10)
     const cx = 541
     const cy = CHROME + 210
@@ -510,39 +547,39 @@ function drawSoftware(ctx, p, variant, rand, t, brand) {
       ctx.moveTo(cx, cy)
       ctx.arc(cx, cy, rad, start, start + frac * Math.PI * 2)
       ctx.closePath()
-      ctx.fillStyle = [p.strong, p.mid, p.soft][i]
+      ctx.fillStyle = [p.strong, p.mid, p.surfaceAlt][i]
       ctx.fill()
       start += frac * Math.PI * 2
     })
-    ctx.fillStyle = '#ffffff'
+    ctx.fillStyle = p.surface
     ctx.beginPath()
     ctx.arc(cx, cy, 20, 0, Math.PI * 2)
     ctx.fill()
-    text(ctx, DASH.donut, 482, CHROME + 170, { size: 11.5, weight: 650, color: p.ink })
+    text(ctx, DASH.donut, 482, CHROME + 170, { size: 11.5, weight: 650, color: p.tStrong })
     DASH.legend.forEach(([label, pct], i) => {
-      ctx.fillStyle = [p.strong, p.mid, p.soft][i]
+      ctx.fillStyle = [p.strong, p.mid, p.surfaceAlt][i]
       r(ctx, 482, CHROME + 266 + i * 24, 10, 10, 3)
-      text(ctx, label, 500, CHROME + 271 + i * 24, { size: 10.5, color: '#6c7689' })
+      text(ctx, label, 500, CHROME + 271 + i * 24, { size: 10.5, color: p.tMid })
       text(ctx, pct, 600, CHROME + 271 + i * 24, {
-        size: 10.5, weight: 650, color: p.ink, align: 'right',
+        size: 10.5, weight: 650, color: p.tStrong, align: 'right',
       })
     })
   } else {
     // CRM table: rows slide in from the top
-    ctx.fillStyle = '#ffffff'
+    ctx.fillStyle = p.surface
     r(ctx, 152, CHROME + 62, W - 176, 284, 10)
-    text(ctx, 'Recent activity', 170, CHROME + 86, { size: 12, weight: 650, color: p.ink })
+    text(ctx, 'Recent activity', 170, CHROME + 86, { size: 12, weight: 650, color: p.tStrong })
     ctx.fillStyle = p.strong
     r(ctx, W - 124, CHROME + 74, 84, 24, 12)
     text(ctx, CRM.add, W - 82, CHROME + 86, {
-      size: 10.5, weight: 650, color: '#ffffff', align: 'center',
+      size: 10.5, weight: 650, color: '#0b1020', align: 'center',
     })
 
     const colX = [182, 302, 422, 512]
-    ctx.fillStyle = '#f1f3f8'
+    ctx.fillStyle = p.surfaceAlt
     ctx.fillRect(170, CHROME + 110, W - 212, 26)
     CRM.cols.forEach((c, i) =>
-      text(ctx, c, colX[i], CHROME + 123, { size: 10, weight: 700, color: '#8b94a6' })
+      text(ctx, c, colX[i], CHROME + 123, { size: 10, weight: 700, color: p.tFaint })
     )
 
     const rowH = 32
@@ -560,27 +597,27 @@ function drawSoftware(ctx, p, variant, rand, t, brand) {
       const row = CRM.rows[((n % CRM.rows.length) + CRM.rows.length) % CRM.rows.length]
       const [name, email, status, added] = row
       const fresh = i <= 0
-      ctx.fillStyle = n % 2 ? '#fbfcfe' : '#ffffff'
+      ctx.fillStyle = n % 2 ? p.surfaceAlt : p.surface
       ctx.fillRect(170, y, W - 212, rowH - 2)
       ctx.globalAlpha = fresh ? clamp(offset / rowH) : 1
 
       // avatar with initials
-      ctx.fillStyle = [p.strong, p.mid, '#94a3b8'][Math.abs(n) % 3]
+      ctx.fillStyle = [p.strong, p.mid, '#64748b'][Math.abs(n) % 3]
       ctx.beginPath()
       ctx.arc(192, y + 15, 9, 0, Math.PI * 2)
       ctx.fill()
       const initials = name.split(' ').map((w) => w[0]).join('')
-      text(ctx, initials, 192, y + 16, { size: 8.5, weight: 700, color: '#ffffff', align: 'center' })
+      text(ctx, initials, 192, y + 16, { size: 8.5, weight: 700, color: '#0b1020', align: 'center' })
 
-      text(ctx, name, 210, y + 15, { size: 11, weight: 600, color: p.ink, max: 86 })
-      text(ctx, email, colX[1], y + 15, { size: 10, color: '#8b94a6', max: 112 })
+      text(ctx, name, 210, y + 15, { size: 11, weight: 600, color: p.tStrong, max: 86 })
+      text(ctx, email, colX[1], y + 15, { size: 10, color: p.tMid, max: 112 })
 
       const sc = CRM.statusColor[status] || p.strong
-      ctx.fillStyle = sc + '22'
+      ctx.fillStyle = sc + '2e'
       r(ctx, colX[2] - 4, y + 6, 62, 18, 9)
       text(ctx, status, colX[2] + 27, y + 16, { size: 9.5, weight: 700, color: sc, align: 'center' })
 
-      text(ctx, added, colX[3], y + 15, { size: 10, color: '#9aa3b2' })
+      text(ctx, added, colX[3], y + 15, { size: 10, color: p.tFaint })
       ctx.globalAlpha = 1
     }
     ctx.restore()
@@ -612,7 +649,7 @@ export function createPanelTexture(kind = 'website', seed = 0, paletteIndex = 0,
     ctx.clearRect(0, 0, W, H)
     if (kind === 'website') drawWebsite(ctx, p, variant, rand, t, brand)
     else drawSoftware(ctx, p, variant, rand, t, brand)
-    drawChrome(ctx, label)
+    drawChrome(ctx, label, p)
     texture.needsUpdate = true
   }
 

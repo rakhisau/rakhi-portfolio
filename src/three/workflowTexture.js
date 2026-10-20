@@ -26,7 +26,7 @@ const r = (ctx, x, y, w, h, rad) => {
 
 function drawEdge(ctx, a, b, color, active, done) {
   const cx = (a.x + b.x) / 2
-  ctx.strokeStyle = done || active ? color : '#d7dde8'
+  ctx.strokeStyle = done || active ? color : '#2a3350'
   ctx.lineWidth = done || active ? 2.6 : 2
   ctx.beginPath()
   ctx.moveTo(a.x + 54, a.y)
@@ -34,7 +34,7 @@ function drawEdge(ctx, a, b, color, active, done) {
   ctx.stroke()
 
   // arrow head
-  ctx.fillStyle = done || active ? color : '#d7dde8'
+  ctx.fillStyle = done || active ? color : '#2a3350'
   ctx.beginPath()
   ctx.moveTo(b.x - 54, b.y)
   ctx.lineTo(b.x - 62, b.y - 4.5)
@@ -71,28 +71,28 @@ function drawNode(ctx, n, state, accent) {
     ctx.fill()
   }
 
-  ctx.fillStyle = '#ffffff'
+  ctx.fillStyle = '#171d30'
   r(ctx, x, y, w, h, 11)
-  ctx.strokeStyle = state === 'idle' ? '#dfe4ec' : accent
+  ctx.strokeStyle = state === 'idle' ? '#2a3350' : accent
   ctx.lineWidth = state === 'active' ? 2.6 : 1.8
   ctx.beginPath()
   ctx.roundRect(x, y, w, h, 11)
   ctx.stroke()
 
   // icon chip
-  ctx.fillStyle = state === 'idle' ? '#eef1f6' : accent
+  ctx.fillStyle = state === 'idle' ? '#1d2439' : accent
   r(ctx, x + 9, y + 11, 28, 28, 8)
-  ctx.fillStyle = state === 'idle' ? '#9aa3b2' : '#ffffff'
+  ctx.fillStyle = state === 'idle' ? '#616c88' : '#0b1020'
   ctx.font = '600 15px system-ui, sans-serif'
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   ctx.fillText(n.icon, x + 23, y + 26)
 
   ctx.textAlign = 'left'
-  ctx.fillStyle = '#1e2434'
+  ctx.fillStyle = '#eaeefb'
   ctx.font = '650 12px system-ui, sans-serif'
   ctx.fillText(n.label, x + 45, y + 19)
-  ctx.fillStyle = '#98a1b2'
+  ctx.fillStyle = '#9aa5c0'
   ctx.font = '500 10.5px system-ui, sans-serif'
   ctx.fillText(n.sub, x + 45, y + 35)
 
@@ -126,11 +126,11 @@ export function createWorkflowTexture(accent = '#6d28d9') {
     const t = (cycle % STEP) / STEP
 
     ctx.clearRect(0, 0, W, H)
-    ctx.fillStyle = '#fbfcfe'
+    ctx.fillStyle = '#0f1424'
     ctx.fillRect(0, 0, W, H)
 
     // faint grid, like an automation canvas
-    ctx.strokeStyle = '#eef1f6'
+    ctx.strokeStyle = '#1a2133'
     ctx.lineWidth = 1
     for (let x = 0; x < W; x += 26) {
       ctx.beginPath(); ctx.moveTo(x, 38); ctx.lineTo(x, H); ctx.stroke()
@@ -140,25 +140,25 @@ export function createWorkflowTexture(accent = '#6d28d9') {
     }
 
     // header
-    ctx.fillStyle = '#ffffff'
+    ctx.fillStyle = '#171d30'
     ctx.fillRect(0, 0, W, 38)
-    ctx.strokeStyle = '#e8ebf2'
+    ctx.strokeStyle = '#2a3350'
     ctx.beginPath(); ctx.moveTo(0, 38); ctx.lineTo(W, 38); ctx.stroke()
     ctx.fillStyle = accent
     r(ctx, 18, 12, 14, 14, 4)
-    ctx.fillStyle = '#1e2434'
+    ctx.fillStyle = '#eaeefb'
     ctx.font = '650 13px system-ui, sans-serif'
     ctx.textBaseline = 'middle'
     ctx.fillText('Lead Qualification Agent', 42, 20)
     // running pill
     const pulse = 0.55 + Math.sin(time * 4) * 0.45
-    ctx.fillStyle = '#ecfdf5'
+    ctx.fillStyle = 'rgba(52,211,153,0.16)'
     r(ctx, W - 118, 9, 100, 21, 11)
     ctx.fillStyle = `rgba(16,185,129,${pulse})`
     ctx.beginPath()
     ctx.arc(W - 104, 19.5, 4.5, 0, Math.PI * 2)
     ctx.fill()
-    ctx.fillStyle = '#047857'
+    ctx.fillStyle = '#34d399'
     ctx.font = '600 11px system-ui, sans-serif'
     ctx.fillText('running', W - 92, 20)
 
