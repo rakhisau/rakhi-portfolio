@@ -449,6 +449,43 @@ a {
   object-fit: cover;
 }
 
+/* YouTube autoplay: the iframe is taller than the frame, so YouTube
+   letterboxes the video and draws its title bar and logo in the black
+   bands above and below, which the frame then crops away. */
+.hero-video-yt iframe {
+  top: -80px;
+  bottom: auto;
+  height: calc(100% + 160px);
+  pointer-events: none;
+}
+
+.hero-video-shield {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.hero-video-sound {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(7, 9, 18, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(6px);
+  transition: background 0.3s var(--ease);
+}
+
+.hero-video-shield:hover .hero-video-sound { background: rgba(124, 58, 237, 0.8); }
+
 /* waiting-for-video state */
 .hero-video-empty {
   display: grid;

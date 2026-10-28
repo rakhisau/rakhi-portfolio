@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 
 function youtubeId(url) {
   const m = url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/)
@@ -8,6 +8,60 @@ function youtubeId(url) {
 function vimeoId(url) {
   const m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)
   return m ? m[1] : null
+}
+
+// Muted autoplay with every bit of YouTube chrome switched off. Browsers
+// only allow autoplay when muted, so sound is a tap away instead.
+function YouTubeAutoplay({ id, name }) {
+  const frame = useRef(null)
+  const [muted, setMuted] = useState(true)
+
+  const toggleSound = () => {
+    const func = muted ? 'unMute' : 'mute'
+    frame.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: 'command', func, args: [] }),
+      'https://www.youtube-nocookie.com'
+    )
+    setMuted(!muted)
+  }
+
+  const params = new URLSearchParams({
+    autoplay: '1',
+    mute: '1',
+    loop: '1',
+    playlist: id, // required for loop to work on a single video
+    controls: '0',
+    disablekb: '1',
+    fs: '0',
+    rel: '0',
+    iv_load_policy: '3',
+    cc_load_policy: '0',
+    playsinline: '1',
+    enablejsapi: '1',
+  })
+
+  return (
+    <div className="hero-video">
+      <div className="hero-video-frame hero-video-yt">
+        <iframe
+          ref={frame}
+          src={`https://www.youtube-nocookie.com/embed/${id}?${params}`}
+          title={`${name} intro video`}
+          allow="autoplay; encrypted-media; picture-in-picture"
+          tabIndex={-1}
+        />
+        {/* Sits over the player so hovering never wakes YouTube's own UI. */}
+        <button
+          type="button"
+          className="hero-video-shield"
+          onClick={toggleSound}
+          aria-label={muted ? 'Turn sound on' : 'Mute video'}
+        >
+          <span className="hero-video-sound">{muted ? '🔇 Tap for sound' : '🔊 Sound on'}</span>
+        </button>
+      </div>
+    </div>
+  )
 }
 
 export default function HeroVideo({ src, poster, name }) {
@@ -26,20 +80,20 @@ export default function HeroVideo({ src, poster, name }) {
   }
 
   const yt = youtubeId(src)
-  const vimeo = vimeoId(src)
-  const embedded = yt || vimeo
-  const thumb = poster || (yt ? `https://img.youtube.com/vi/${yt}/maxresdefault.jpg` : '')
+  if (yt) return <YouTubeAutoplay id={yt} name={name} />
 
-  // Embeds stay as a lightweight thumbnail until clicked, so the hero
+  const vimeo = vimeoId(src)
+
+  // Vimeo stays as a lightweight thumbnail until clicked, so the hero
   // doesn't pay for a player iframe on first load.
-  if (embedded && !playing) {
+  if (vimeo && !playing) {
     return (
       <div className="hero-video">
         <button
           className="hero-video-frame hero-video-facade"
           onClick={() => setPlaying(true)}
           aria-label={`Play intro video from ${name}`}
-          style={thumb ? { backgroundImage: `url(${thumb})` } : undefined}
+          style={poster ? { backgroundImage: `url(${poster})` } : undefined}
         >
           <span className="hero-video-play"><span /></span>
           <span className="hero-video-label">Watch my 60-second intro</span>
@@ -48,15 +102,12 @@ export default function HeroVideo({ src, poster, name }) {
     )
   }
 
-  if (embedded) {
-    const url = yt
-      ? `https://www.youtube-nocookie.com/embed/${yt}?autoplay=1&rel=0&modestbranding=1`
-      : `https://player.vimeo.com/video/${vimeo}?autoplay=1`
+  if (vimeo) {
     return (
       <div className="hero-video">
         <div className="hero-video-frame">
           <iframe
-            src={url}
+            src={`https://player.vimeo.com/video/${vimeo}?autoplay=1`}
             title={`${name} intro video`}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; picture-in-picture"
             allowFullScreen
