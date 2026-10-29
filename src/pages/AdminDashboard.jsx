@@ -4,6 +4,8 @@ import { supabase } from '../lib/supabaseClient'
 import { CATEGORIES } from '../lib/categories'
 import { compressImage, formatBytes } from '../lib/compressImage'
 
+const BUCKET = 'project-images'
+
 const EMPTY_FORM = {
   id: null,
   category: CATEGORIES[0].key,
@@ -19,10 +21,27 @@ async function uploadFile(file, folder) {
   const optimised = await compressImage(file)
   const ext = optimised.name.split('.').pop()
   const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-  const { error } = await supabase.storage.from('project-images').upload(path, optimised)
+  const { error } = await supabase.storage.from(BUCKET).upload(path, optimised)
   if (error) throw error
-  const { data } = supabase.storage.from('project-images').getPublicUrl(path)
+  const { data } = supabase.storage.from(BUCKET).getPublicUrl(path)
   return data.publicUrl
+}
+
+// Best-effort cleanup of an uploaded file once nothing points at it.
+async function removeStoredFile(url) {
+  const marker = `/${BUCKET}/`
+  const i = url ? url.indexOf(marker) : -1
+  if (i === -1) return
+  await supabase.storage.from(BUCKET).remove([decodeURIComponent(url.slice(i + marker.length))])
+}
+
+// Row-level security doesn't error on a blocked delete, it just deletes
+// nothing, so ask for the deleted rows back and check there was one.
+async function deleteRow(table, id) {
+  const { data, error } = await supabase.from(table).delete().eq('id', id).select('id')
+  if (error) return error.message
+  if (!data?.length) return 'Nothing was deleted — check the Supabase delete policy for this table.'
+  return null
 }
 
 // Shows what compression will do before anything is uploaded.
@@ -38,15 +57,34 @@ async function describeSavings(files) {
   }
 }
 
+function FilePreview({ file, onRemove, label = 'Remove', className = 'admin-existing-image' }) {
+  const [url, setUrl] = useState('')
+
+  useEffect(() => {
+    const u = URL.createObjectURL(file)
+    setUrl(u)
+    return () => URL.revokeObjectURL(u)
+  }, [file])
+
+  return (
+    <div className={className}>
+      {url && <img src={url} alt="" />}
+      <button type="button" onClick={onRemove}>{label}</button>
+    </div>
+  )
+}
+
 export default function AdminDashboard() {
   const [session, setSession] = useState(undefined)
   const [projects, setProjects] = useState([])
   const [leads, setLeads] = useState([])
   const [form, setForm] = useState(EMPTY_FORM)
+  const [originalCover, setOriginalCover] = useState('')
   const [coverFile, setCoverFile] = useState(null)
   const [extraFiles, setExtraFiles] = useState([])
   const [savings, setSavings] = useState(null)
   const [existingImages, setExistingImages] = useState([])
+  const [inputKey, setInputKey] = useState(0)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
@@ -67,6 +105,24 @@ export default function AdminDashboard() {
     loadLeads()
   }, [session])
 
+  // Re-estimate whenever the picked files change, covering cover and
+  // screenshots together so one doesn't overwrite the other's note.
+  useEffect(() => {
+    const files = [coverFile, ...extraFiles].filter((f) => f && f.type.startsWith('image/'))
+    if (!files.length) {
+      setSavings(null)
+      return
+    }
+    let cancelled = false
+    setSavings('working')
+    describeSavings(files).then((s) => {
+      if (!cancelled) setSavings(s)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [coverFile, extraFiles])
+
   const loadProjects = async () => {
     const { data } = await supabase.from('projects').select('*').order('created_at', { ascending: false })
     setProjects(data || [])
@@ -79,7 +135,11 @@ export default function AdminDashboard() {
 
   const handleDeleteLead = async (id) => {
     if (!window.confirm('Delete this lead?')) return
-    await supabase.from('leads').delete().eq('id', id)
+    const problem = await deleteRow('leads', id)
+    if (problem) {
+      window.alert(`Couldn't delete the lead: ${problem}`)
+      return
+    }
     loadLeads()
   }
 
@@ -90,18 +150,12 @@ export default function AdminDashboard() {
 
   const resetForm = () => {
     setForm(EMPTY_FORM)
+    setOriginalCover('')
     setCoverFile(null)
     setExtraFiles([])
     setExistingImages([])
-    setSavings(null)
+    setInputKey((k) => k + 1)
     setError('')
-  }
-
-  const pickFiles = async (files, apply) => {
-    apply()
-    const all = [...files].filter((f) => f.type.startsWith('image/'))
-    setSavings(all.length ? 'working' : null)
-    if (all.length) setSavings(await describeSavings(all))
   }
 
   const startEdit = (p) => {
@@ -115,22 +169,42 @@ export default function AdminDashboard() {
       live_link: p.live_link || '',
       cover_image: p.cover_image || '',
     })
+    setOriginalCover(p.cover_image || '')
     setCoverFile(null)
     setExtraFiles([])
+    setInputKey((k) => k + 1)
+    setError('')
     loadExistingImages(p.id)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleDeleteProject = async (id) => {
     if (!window.confirm('Delete this project? This cannot be undone.')) return
-    await supabase.from('projects').delete().eq('id', id)
+    const problem = await deleteRow('projects', id)
+    if (problem) {
+      window.alert(`Couldn't delete the project: ${problem}`)
+      return
+    }
     loadProjects()
     if (form.id === id) resetForm()
   }
 
-  const handleDeleteImage = async (imageId) => {
-    await supabase.from('project_images').delete().eq('id', imageId)
-    setExistingImages((imgs) => imgs.filter((i) => i.id !== imageId))
+  const handleDeleteImage = async (img) => {
+    if (!window.confirm('Remove this screenshot?')) return
+    setError('')
+    const problem = await deleteRow('project_images', img.id)
+    if (problem) {
+      setError(`Couldn't remove the screenshot: ${problem}`)
+      return
+    }
+    setExistingImages((imgs) => imgs.filter((i) => i.id !== img.id))
+    removeStoredFile(img.image_url)
+  }
+
+  const removeCover = () => {
+    setCoverFile(null)
+    setForm({ ...form, cover_image: '' })
+    setInputKey((k) => k + 1)
   }
 
   const handleSubmit = async (e) => {
@@ -150,7 +224,7 @@ export default function AdminDashboard() {
         description: form.description,
         tech_stack: form.tech_stack,
         live_link: form.live_link,
-        cover_image: coverUrl,
+        cover_image: coverUrl || null,
       }
 
       let projectId = form.id
@@ -163,9 +237,12 @@ export default function AdminDashboard() {
         projectId = data.id
       }
 
+      if (originalCover && originalCover !== coverUrl) removeStoredFile(originalCover)
+
       if (extraFiles.length) {
+        const start = existingImages.reduce((n, img) => Math.max(n, (img.sort_order ?? -1) + 1), 0)
         const urls = await Promise.all(extraFiles.map((f) => uploadFile(f, form.category)))
-        const rows = urls.map((url, i) => ({ project_id: projectId, image_url: url, sort_order: i }))
+        const rows = urls.map((url, i) => ({ project_id: projectId, image_url: url, sort_order: start + i }))
         const { error } = await supabase.from('project_images').insert(rows)
         if (error) throw error
       }
@@ -260,49 +337,60 @@ export default function AdminDashboard() {
           <label>
             Cover image {form.cover_image && !coverFile && '(already set — choose a file to replace)'}
             <input
+              key={`cover-${inputKey}`}
               type="file"
               accept="image/*"
-              onChange={(e) => {
-                const files = [...e.target.files]
-                pickFiles(files, () => setCoverFile(files[0] || null))
-              }}
+              onChange={(e) => setCoverFile(e.target.files[0] || null)}
             />
           </label>
-          {form.cover_image && (
-            <img src={form.cover_image} alt="Current cover" className="admin-cover-preview" />
+          {coverFile ? (
+            <FilePreview file={coverFile} onRemove={removeCover} className="admin-existing-image admin-cover" />
+          ) : form.cover_image ? (
+            <div className="admin-existing-image admin-cover">
+              <img src={form.cover_image} alt="Current cover" />
+              <button type="button" onClick={removeCover}>Remove cover</button>
+            </div>
+          ) : null}
+          {originalCover && !form.cover_image && !coverFile && (
+            <p className="admin-note">The cover will be removed when you save.</p>
           )}
 
           <label>
             Additional screenshots
             <input
+              key={`extra-${inputKey}`}
               type="file"
               accept="image/*"
               multiple
-              onChange={(e) => {
-                const files = Array.from(e.target.files)
-                pickFiles(files, () => setExtraFiles(files))
-              }}
+              onChange={(e) => setExtraFiles([...extraFiles, ...Array.from(e.target.files)])}
             />
           </label>
 
-          {savings === 'working' && <p className="admin-note">Checking images…</p>}
-          {savings && savings !== 'working' && (
-            <p className="admin-note admin-note-good">
-              {savings.count} image{savings.count > 1 ? 's' : ''} will be resized to 1600px wide
-              and converted to WebP — {formatBytes(savings.before)} → {formatBytes(savings.after)}
-              {savings.saved > 0 && ` (${savings.saved}% smaller)`}
-            </p>
-          )}
-
-          {existingImages.length > 0 && (
+          {(existingImages.length > 0 || extraFiles.length > 0) && (
             <div className="admin-existing-images">
               {existingImages.map((img) => (
                 <div className="admin-existing-image" key={img.id}>
                   <img src={img.image_url} alt="" />
-                  <button type="button" onClick={() => handleDeleteImage(img.id)}>Remove</button>
+                  <button type="button" onClick={() => handleDeleteImage(img)}>Remove</button>
                 </div>
               ))}
+              {extraFiles.map((f, i) => (
+                <FilePreview
+                  key={`${f.name}-${f.lastModified}-${i}`}
+                  file={f}
+                  onRemove={() => setExtraFiles(extraFiles.filter((_, j) => j !== i))}
+                />
+              ))}
             </div>
+          )}
+
+          {savings === 'working' && <p className="admin-note">Checking images…</p>}
+          {savings && savings !== 'working' && (
+            <p className="admin-note admin-note-good">
+              {savings.count} new image{savings.count > 1 ? 's' : ''} will be resized to 1600px wide
+              and converted to WebP — {formatBytes(savings.before)} → {formatBytes(savings.after)}
+              {savings.saved > 0 && ` (${savings.saved}% smaller)`}
+            </p>
           )}
 
           {error && <p className="admin-error">{error}</p>}
@@ -341,7 +429,7 @@ export default function AdminDashboard() {
 
         <div className="admin-list">
           <h2>Leads ({leads.length})</h2>
-          {leads.length === 0 && <p>No leads yet — they'll appear here when visitors submit the popup form.</p>}
+          {leads.length === 0 && <p>No leads yet — they'll appear here when visitors submit the enquiry form.</p>}
           {leads.map((l) => (
             <div className="admin-leads-row" key={l.id}>
               <div className="admin-list-info">

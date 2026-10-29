@@ -10,6 +10,7 @@ import { CATEGORIES } from '../lib/categories'
 import { useScrollProgress } from '../hooks/useScrollProgress'
 import { useDeviceTier } from '../hooks/useDeviceTier'
 import HeroVideo from '../components/HeroVideo'
+import LeadForm from '../components/LeadForm'
 import {
   NAME, TITLE, EMAIL, PHONE, PHONE_DIAL, WHATSAPP_LINK,
   SOCIALS, SERVICES, STATS, TECH, HERO_VIDEO, HERO_VIDEO_POSTER,
@@ -82,6 +83,22 @@ export default function Home() {
             </div>
           </div>
           <div className="scroll-cue"><span /></div>
+        </section>
+
+        {/* ---------- Enquiry form ---------- */}
+        <section id="enquire" className="chapter chapter-enquire">
+          <div className="container">
+            <div className="glass-panel enquire-panel">
+              <div className="enquire-copy">
+                <p className="eyebrow">Free consultation</p>
+                <MaskedText as="h2" text="Have a project in mind?" className="chapter-title" />
+                <p className="chapter-body">
+                  Share a few details and I'll reach out to discuss how I can help.
+                </p>
+              </div>
+              <LeadForm />
+            </div>
+          </div>
         </section>
 
         {/* ---------- Chapter 2 ---------- */}
