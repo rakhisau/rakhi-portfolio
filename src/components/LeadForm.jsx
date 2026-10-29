@@ -1,10 +1,8 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import { CATEGORIES } from '../lib/categories'
-import { WHATSAPP_DIAL } from '../lib/siteInfo'
 
 const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY
-const CALLMEBOT_KEY = import.meta.env.VITE_CALLMEBOT_KEY
 const PROJECT_TYPES = [...CATEGORIES.map((c) => c.label), 'Other']
 
 export default function LeadForm() {
@@ -45,14 +43,6 @@ export default function LeadForm() {
             note,
           }),
         }).catch(() => {})
-      }
-
-      // CallMeBot relays a WhatsApp message to the owner's own number.
-      // It sends no CORS headers, so fire the request without reading it.
-      if (CALLMEBOT_KEY) {
-        const text = `New lead from portfolio\nName: ${name}\nPhone: ${phone}\nProject: ${projectType}${note.trim() ? `\nNote: ${note.trim()}` : ''}`
-        const params = new URLSearchParams({ phone: WHATSAPP_DIAL, text, apikey: CALLMEBOT_KEY })
-        fetch(`https://api.callmebot.com/whatsapp.php?${params}`, { mode: 'no-cors' }).catch(() => {})
       }
 
       setDone(true)
