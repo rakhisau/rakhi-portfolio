@@ -59,7 +59,7 @@ export default function SiteHeader() {
               </Link>
             ))}
           </div>
-          <Link to="/#contact" className="header-cta" onClick={() => setNavOpen(false)}>
+          <Link to="/#enquire" className="header-cta" onClick={() => setNavOpen(false)}>
             Start a project
           </Link>
         </nav>

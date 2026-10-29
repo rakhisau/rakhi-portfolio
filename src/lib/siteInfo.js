@@ -1,9 +1,12 @@
 export const NAME = 'Rakhi Sau'
 export const TITLE = 'Full-Stack Developer & AI Automation Specialist'
 export const EMAIL = 'rakhisau30@gmail.com'
+// Calls and WhatsApp go to different numbers.
 export const PHONE = '+91 8967060021'
 export const PHONE_DIAL = '+918967060021'
-export const WHATSAPP_LINK = 'https://wa.me/918967060021'
+export const WHATSAPP = '+91 6297064644'
+export const WHATSAPP_DIAL = '916297064644'
+export const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_DIAL}`
 
 // Hero intro video. Accepts a YouTube/Vimeo link or a direct .mp4 URL.
 // Leave empty and the hero renders without the video column.

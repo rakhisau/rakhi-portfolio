@@ -12,7 +12,7 @@ import { useDeviceTier } from '../hooks/useDeviceTier'
 import HeroVideo from '../components/HeroVideo'
 import LeadForm from '../components/LeadForm'
 import {
-  NAME, TITLE, EMAIL, PHONE, PHONE_DIAL, WHATSAPP_LINK,
+  NAME, TITLE, EMAIL, PHONE, PHONE_DIAL, WHATSAPP, WHATSAPP_LINK,
   SOCIALS, SERVICES, STATS, TECH, HERO_VIDEO, HERO_VIDEO_POSTER,
 } from '../lib/siteInfo'
 
@@ -63,7 +63,7 @@ export default function Home() {
                 />
                 <p className="hero-sub">{TITLE}</p>
                 <div className="hero-actions">
-                  <a className="btn btn-primary" href="#contact">Start a project</a>
+                  <a className="btn btn-primary" href="#enquire">Start a project</a>
                   <a className="btn btn-outline" href="#work">Explore the work</a>
                 </div>
               </div>
@@ -190,7 +190,8 @@ export default function Home() {
               </div>
               <div className="contact-details">
                 <p>{EMAIL}</p>
-                <p>{PHONE}</p>
+                <p>Call: {PHONE}</p>
+                <p>WhatsApp: {WHATSAPP}</p>
               </div>
               <div className="socials">
                 {SOCIALS.map((s) => (
